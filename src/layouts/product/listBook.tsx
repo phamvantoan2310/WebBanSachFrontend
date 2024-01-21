@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import BookProp from "./Component/BookProp";
-import { findByName, getAllBook } from "../../api/bookApi";
+import { findBook, getAllBook } from "../../api/bookApi";
 import BookModel from "../../models/BookModel";
 import Pagination from "./Component/Pagination";
 
 interface listBookInterface{
     bookName : string;
+    categoryID: number;
 }
 
 const ListBook: React.FC<listBookInterface> = (props) => {
@@ -18,7 +19,7 @@ const ListBook: React.FC<listBookInterface> = (props) => {
     
 
     useEffect(()=>{
-        if(props.bookName === ''){
+        if(props.bookName === '' && props.categoryID === 0){
             getAllBook(currentPage-1).then(
                 kq=>{
                     setBooks(kq.result);
@@ -32,7 +33,7 @@ const ListBook: React.FC<listBookInterface> = (props) => {
                 }
             );
         }else{
-            findByName(props.bookName).then(
+            findBook(props.bookName, props.categoryID).then(
                 kq=>{
                     setBooks(kq.result);
                     setTotalPages(kq.totalPages);   
@@ -45,7 +46,7 @@ const ListBook: React.FC<listBookInterface> = (props) => {
                 }
             );
         }
-    },[currentPage, props.bookName])  //chỉ gọi endpoint một lần
+    },[currentPage, props.bookName, props.categoryID])  //chỉ gọi endpoint một lần
 
     const paginationMethod = (page:number) =>{
         setCurrentPage(page);

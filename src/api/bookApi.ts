@@ -45,7 +45,18 @@ export async function get3Book(): Promise<getResult> {
     return getBook(endpoint);
 }
 
-export async function findByName(bookName:string): Promise<getResult> {
-    const endpoint: string = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookID,desc&size=8&page=0&bookName=${bookName}`;
+export async function findBook(bookName:string, categoryID:number): Promise<getResult> {
+    let endpoint: string = `http://localhost:8080/books?sort=bookID,desc&page=0&size=8`;
+
+
+    if(bookName !== "" && categoryID === 0){
+        endpoint = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookID,desc&size=8&page=0&bookName=${bookName}`;
+    }else if(bookName === "" && categoryID > 0){
+        endpoint = `http://localhost:8080/books/search/findByCategoryList_CategoryID?sort=bookID,desc&categoryID=${categoryID}`;
+    }else if(bookName !== "" && categoryID > 0){
+        endpoint = `http://localhost:8080/books/search/findByBookNameContainingAndCategoryList_CategoryID?sort=bookID,desc&bookName=${bookName}&categoryID=${categoryID}`;
+    }
+
+
     return getBook(endpoint);
 }

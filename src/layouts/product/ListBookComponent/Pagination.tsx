@@ -33,29 +33,31 @@ const Pagination: React.FC<paginationInterface> = (props) => {
         }
     }
     return (
-        <nav aria-label="...">
-            <ul className="pagination">
-                <li className="page-item" onClick={() => props.paginationMethod(1)}>
-                    <button className="page-link" >
-                        Trang Đầu
-                    </button>
-                </li>
-                {
-                    paginations.map(page => (
-                        <li className="page-item" key={page} onClick={() => props.paginationMethod(page)}>
-                            <button className={"page-link " + (props.currentPage === page ? "active" : "")}>
-                                {page}
-                            </button>
-                        </li>
-                    ))
-                }
-                <li className="page-item" onClick={() => props.paginationMethod(props.totalPages)}>
-                    <button className="page-link" >
-                        Trang Cuối
-                    </button>
-                </li>
-            </ul>
-        </nav>
+        <div style={{ marginTop: "30px", paddingLeft:"500px"}}>
+            <nav aria-label="...">
+                <ul className="pagination">
+                    <li className="page-item" onClick={() => props.paginationMethod(1)}>
+                        <button className="page-link" >
+                            Trang Đầu
+                        </button>
+                    </li>
+                    {
+                        paginations.map(page => (
+                            <li className="page-item" key={page} onClick={() => props.paginationMethod(page)}>
+                                <button className={"page-link " + (props.currentPage === page ? "active" : "")}>
+                                    {page}
+                                </button>
+                            </li>
+                        ))
+                    }
+                    <li className="page-item" onClick={() => props.paginationMethod(props.totalPages)}>
+                        <button className="page-link" >
+                            Trang Cuối
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     );
 }
 

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import BookProp from "./Component/BookProp";
+import BookProp from "./ListBookComponent/BookProp";
 import { findBook, getAllBook } from "../../api/bookApi";
 import BookModel from "../../models/BookModel";
-import Pagination from "./Component/Pagination";
+import Pagination from "./ListBookComponent/Pagination";
 
 interface listBookInterface{
     bookName : string;

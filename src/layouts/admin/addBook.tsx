@@ -98,7 +98,7 @@ const AddBook: React.FC = (props) => {
     }
 
     return (
-        <div className='container row d-flex align-items-center justify-content-center'>
+        <div className='container row d-flex align-items-center justify-content-center pt-5 mt-5'>
             <div className=''>
                 <h1>THÊM SÁCH</h1>
                 <form onSubmit={handleSubmit} className='form'>

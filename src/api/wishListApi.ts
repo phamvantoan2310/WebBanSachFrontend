@@ -1,5 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import WishList from "../models/WishList";
+import { Console } from "console";
+import BookModel from "../models/BookModel";
 
 export async function getWishList(token: string) {
     const wishLists: WishList[] = [];
@@ -20,7 +22,7 @@ export async function getWishList(token: string) {
         });
 
         if (!response.ok) {
-            throw new Error("fail call API getABook");
+            throw new Error("fail call API getWishList");
         }
 
         const responseData = await response.json();
@@ -39,4 +41,78 @@ export async function getWishList(token: string) {
     // const userData = jwtDecode(token);
 
     return wishLists;
+}
+
+export async function addWishList(wishlist : WishList, token: string|null){
+    try {
+        const endpoint = 'http://localhost:8080/user/addwishlist';
+        const data = {
+            wishListID: 0,
+            wishlistName: wishlist.wishList_name,
+        }
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+        return response;
+    } catch (error) {
+        console.log("Error: " + error);
+    }
+}
+
+export async function getBookInWishList(wishListID:string, token: string) {
+    try {
+        const endpoint = `http://localhost:8080/wish-lists/${wishListID}/bookList`;
+
+        const books : BookModel[] = [];
+
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        if(!response.ok){
+            throw new Error("fail call api getBookInWishList");
+        }
+        const responseData = await response.json();
+        const data = responseData._embedded.books;
+
+        for(const key in data){
+            books.push({
+                book_id: data[key].bookID,
+                book_name: data[key].bookName,
+                price: data[key].price,
+                listed_price: data[key].listedPrice,
+                description: data[key].decription,
+                number_of_book: data[key].numberOfBooks,
+                point: data[key].point
+            });
+        }
+        return books;
+    } catch (error) {
+        console.log("Error" + error);
+    }
+}
+
+export async function deleteWishList(wishListID: number, token: string){
+    try {
+        const endpoint = 'http://localhost:8080/user/deletewishlist';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(wishListID)
+        })
+        return response;
+    } catch (error) {
+        console.log("Error: " + error);
+    }
 }

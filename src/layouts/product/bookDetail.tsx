@@ -98,7 +98,7 @@ const BookDetail: React.FC = () => {
     }
 
     return (
-        <div className="container" >
+        <div className="container pt-5" >
             <hr />
             <div className="row mt-4 mb-4">
                 <div className="col-5">

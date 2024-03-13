@@ -13,6 +13,7 @@ import Test from './layouts/user/test';
 import AddBook_Admin from './layouts/admin/addBook';
 import ListBook from './layouts/product/listBook';
 import WishListItem from './layouts/wishList/wishListItem';
+import BookInWishList from './layouts/wishList/bookInWishList';
 
 function App() {
   const [bookName, setBookName] = useState<string>("");
@@ -31,7 +32,8 @@ function App() {
           <Route path='/user/login' element={<Login />}/>
           <Route path='/user/test' element={<Test />}/>
           <Route path='/admin/addbook' element={<AddBook_Admin />}/>
-          <Route path='user/wishList' element={<WishListItem />}/>
+          <Route path='/user/wishList' element={<WishListItem />}/>
+          <Route path='/user/wishList/:wishListID/:wishListName' element={<BookInWishList/>}/>
         </Routes>
         <Footer />
       </BrowserRouter>

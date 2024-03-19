@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BookModel from "../../models/BookModel";
 import { getABook } from "../../api/bookApi";
 import ImageBookDetail from "./BookDetailComponent/ImageBookDetail";
@@ -8,6 +8,7 @@ import { getAuthor } from "../../api/authorApi";
 import Evaluate from "./BookDetailComponent/Evaluate";
 import RenderRating from "../../util/RenderRating";
 import Format from "../../util/ToLocaleString";
+import { addCartItem } from "../../api/cartApi";
 
 const BookDetail: React.FC = () => {
     const { bookID } = useParams();
@@ -28,6 +29,7 @@ const BookDetail: React.FC = () => {
     const [error, setError] = useState(null);
     const [Author, setAuthor] = useState<AuthorModel | null>(null);
     const [NumberOfBook, setNumberOfBook] = useState(1);
+    const navigate = useNavigate();
 
     useEffect(() => {
         getABook(bookIDOk).then(
@@ -78,7 +80,21 @@ const BookDetail: React.FC = () => {
     }
 
     const handleAddToCart = () =>{
-
+        const token = localStorage.getItem("tokenLogin");
+        if(token== null){
+            navigate("/user/login");
+        }else{
+            addCartItem(bookIDOk, NumberOfBook, token).then(
+                result=>{
+                    alert("Thêm sản phẩm thành công!");
+                }
+            ).catch(
+                error=>{
+                    console.log(error);
+                    alert("Thêm sản phẩm thất bại!");
+                }
+            )
+        }
     }
 
     if (dataload) {
@@ -101,7 +117,7 @@ const BookDetail: React.FC = () => {
         <div className="container pt-5" >
             <hr />
             <div className="row mt-4 mb-4">
-                <div className="col-5">
+                <div className="col-5" >
                     <ImageBookDetail key={bookIDOk} bookID={bookIDOk} />
                 </div>
                 <div className="col-4">
@@ -111,7 +127,7 @@ const BookDetail: React.FC = () => {
                             <br />
                             <h3 className="card-title text-end">{RenderRating(Book?.point ? Book.point : 0)}</h3>
                             <br />
-                            <h4 className="card-subtitle mb-2 text-danger text-end" >{Format(Book?.listed_price)} đ</h4>
+                            <h4 className="card-subtitle mb-2 text-danger text-end" >{Format(Book?.price)} đ</h4>
                             <br />
                             <p className="card-text text-end">Tác Giả: {Author?.author_name}</p>
                         </div>
@@ -126,10 +142,10 @@ const BookDetail: React.FC = () => {
                             <button className="btn btn-outline-secondary ms-2" onClick={increasing}>+</button>
                         </div>
                         {
-                            Book?.listed_price && (
+                            Book?.price && (
                                 <div className="mt-2 text-center">
                                     Số tiền tạm tính <br />
-                                    <h4>{Format(NumberOfBook * Book.listed_price)} đ</h4>
+                                    <h4>{Format(NumberOfBook * Book.price)} đ</h4>
                                 </div>
                             )
                         }

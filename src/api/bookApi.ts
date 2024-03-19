@@ -83,7 +83,7 @@ export async function getABook(bookID: number): Promise<BookModel | null> {
                 author_id: responseData.author_id
             }
         }else{
-            throw new Error("book andefined");
+            throw new Error("book undefined");
         }
     }catch(error){
         console.error("ERROR: " + error);

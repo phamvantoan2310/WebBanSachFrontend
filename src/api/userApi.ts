@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import UserModel from "../models/UserModel";
 import { my_request } from "./request";
 
@@ -74,3 +75,36 @@ export async function existByEmail(email: string) {
         console.log("error: " + error);
     }
 }
+
+export async function getAUser(token: string): Promise<UserModel | null> {
+    const userdata = jwtDecode(token);
+    const userID = userdata.jti;
+
+    const endpoint: string = `http://localhost:8080/users/${userID}`;
+    try {
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+            throw new Error("fail call API getAUser");
+        }
+        const responseData = await response.json(); //gọi endpoint lấy kết quả dạng json 
+
+        if (responseData) {
+            return {
+                user_id: responseData.userID,
+                password: responseData.password,
+                user_name: responseData.userName,
+                birthday: responseData.birthday,
+                email: responseData.email,
+                address: responseData.address,
+                phone_number: responseData.phoneNumber,
+                sex: responseData.sex
+            }
+        } else {
+            throw new Error("Author andefined");
+        }
+    } catch (error) {
+        console.error("ERROR: " + error);
+        return null;
+    }
+}
+

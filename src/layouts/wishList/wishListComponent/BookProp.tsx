@@ -100,11 +100,11 @@ const BookProp: React.FC<bookPropInterface> = ({ book, wishListID }) => {
                     </Link>
                     <div className="price mb-3">
                         <span className="original-price" style={{ paddingRight: "10px" }}>
-                            <del>{Format(book.price)} đ</del>
+                            <del>{Format(book.listed_price)} đ</del>
                         </span>
 
                         <span className="discounted-price">
-                            <strong>{Format(book.listed_price)} đ</strong>
+                            <strong>{Format(book.price)} đ</strong>
                         </span>
                     </div>
                     <div className="row mt-2" role="group">

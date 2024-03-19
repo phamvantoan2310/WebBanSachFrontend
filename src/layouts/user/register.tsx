@@ -147,7 +147,7 @@ const Register: React.FC = () => {
     }
 
     return (
-        <div className="container">
+        <div className="container mt-5 pt-5">
             <h1 className="mt-5 text-center">Đăng ký</h1>
             <div className="mb-3 col-md-6 col-12 mx-auto">
                 <form onSubmit={handleSubmit} className="form">

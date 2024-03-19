@@ -29,7 +29,7 @@ const Activate = () =>{
     }
 
     return(
-        <div>
+        <div className="mt-5 pt-5">
             <h1>Kích hoạt tài khoản</h1>
             {
                 accountStatus

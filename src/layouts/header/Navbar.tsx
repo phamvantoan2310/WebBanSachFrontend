@@ -15,7 +15,7 @@ const Navbar: React.FC<navbarInterface> = (props) => {
   const handleSearch = () => {
     props.setBookName(temporaryBookName);
   }
-  
+
   const [userName, setUserName] = useState('')
 
   const navigate = useNavigate();
@@ -71,22 +71,22 @@ const Navbar: React.FC<navbarInterface> = (props) => {
         </div>
 
 
-        <ul className="navbar-nav me-1" style={{paddingLeft:'10px'}}>
+        <ul className="navbar-nav me-2" style={{ paddingLeft: '10px' }}>
           <li className="nav-item">
-            
-            <NavLink to={"/user/wishList"} style={{color:'red'}}>
-            <i className="fa fa-heart" aria-hidden="true"></i>
+
+            <NavLink to={"/user/wishList"} style={{ color: 'red' }}>
+              <i className="fa fa-heart" aria-hidden="true"></i>
             </NavLink>
-            
+
           </li>
         </ul>
 
         {/* Biểu tượng giỏ hàng */}
         <ul className="navbar-nav me-1">
           <li className="nav-item">
-            <a className="nav-link" href="#">
+            <NavLink to={"/user/cart"}>
               <i className="fas fa-shopping-cart"></i>
-            </a>
+            </NavLink>
           </li>
         </ul>
 

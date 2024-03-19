@@ -57,7 +57,7 @@ const ImageBookDetail: React.FC<ImageBookDetailInterface> = (props) => {
     return (
         <div className="row">
             <div>
-                {(selectedImage) && <img src={"data:image/png;base64,"+selectedImage.data} style={{height:"500px", marginBottom:"10px"}}/>}
+                {(selectedImage) && <img src={"data:image/png;base64,"+selectedImage.data} style={{height:"500px", marginBottom:"10px", width:'300px'}}/>}
             </div>
             <div className="row mt-2">
                 {

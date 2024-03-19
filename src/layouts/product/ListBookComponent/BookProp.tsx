@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
 import ImageModel from "../../../models/ImageModel";
 import { getImagesByBookId } from "../../../api/imageApi";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import RenderRating from "../../../util/RenderRating";
 import Format from "../../../util/ToLocaleString";
 import WishList from "../../../models/WishList";
@@ -103,7 +103,7 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
 
     return (
         <div className="col-md-3 mt-2">
-            <div className="card" style={{ blockSize: "700px", height: "670px" }}>
+            <div className="card" style={{ blockSize: "700px", height: "680px" }}>
                 <Link to={`/book/${book.book_id}`}>
                     <img
                         src={"data:image/png;base64," + dulieuanh}
@@ -130,11 +130,11 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
                     </Link>
                     <div className="price mb-3">
                         <span className="original-price" style={{ paddingRight: "10px" }}>
-                            <del>{Format(book.price)} đ</del>
+                            <del style={{color:"red"}}>{Format(book.listed_price)} đ</del>
                         </span>
 
                         <span className="discounted-price">
-                            <strong>{Format(book.listed_price)} đ</strong>
+                            <strong>{Format(book.price)} đ</strong>
                         </span>
                     </div>
                     <div className="row mt-2" role="group">
@@ -145,7 +145,9 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
                         </div>
                         <div className="col-6">
                             <button className="btn btn-danger btn-block">
-                                <i className="fas fa-shopping-cart"></i>
+                                <NavLink to={`/book/${book.book_id}`}>
+                                    <i className="fas fa-shopping-cart" style={{color:"white"}}></i>
+                                </NavLink>
                             </button>
                         </div>
                         <h5 className="card-title mt-5 text-end">{RenderRating(book.point ? book.point : 0)}</h5>

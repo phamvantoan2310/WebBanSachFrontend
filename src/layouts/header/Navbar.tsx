@@ -16,7 +16,7 @@ const Navbar: React.FC<navbarInterface> = (props) => {
     props.setBookName(temporaryBookName);
   }
 
-  const [userName, setUserName] = useState('')
+  const token = localStorage.getItem("tokenLogin");
 
   const navigate = useNavigate();
 
@@ -72,34 +72,39 @@ const Navbar: React.FC<navbarInterface> = (props) => {
 
 
         <ul className="navbar-nav me-2" style={{ paddingLeft: '10px' }}>
-          <li className="nav-item">
-
+          <li className="nav-item" style={{ marginRight: "10px" }}>
             <NavLink to={"/user/wishList"} style={{ color: 'red' }}>
               <i className="fa fa-heart" aria-hidden="true"></i>
             </NavLink>
-
           </li>
         </ul>
 
         {/* Biểu tượng giỏ hàng */}
         <ul className="navbar-nav me-1">
-          <li className="nav-item">
+          <li className="nav-item" style={{ marginRight: "15px" }}>
             <NavLink to={"/user/cart"}>
               <i className="fas fa-shopping-cart"></i>
             </NavLink>
           </li>
         </ul>
 
-        {/* Biểu tượng đăng nhập */}
-        <ul className="navbar-nav me-1">
-          <li className="nav-item">
-            <a className="nav-link" href="#">
-              <i className="fas fa-user"></i>
-            </a>
-          </li>
-        </ul>
+
+        {token != null && (
+          < ul className="navbar-nav me-1">
+            <li className="nav-item" style={{ marginRight: "10px" }}>
+              <NavLink to={"/account"}>
+                <i className="fas fa-user" style={{ color: "gray" }}></i>
+              </NavLink>
+            </li>
+          </ul>
+        )}
+        {token == null && (
+          <NavLink to={"/user/login"}>
+            <button className="btn btn-success">Đăng nhập</button>
+          </NavLink>
+        )}
       </div>
-    </nav>
+    </nav >
   );
 }
 export default Navbar;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { deleteWishList, getBookInWishList } from "../../api/wishListApi";
-import BookModel from "../../models/BookModel";
+import { deleteWishList, getBookInWishList } from "../../../api/wishListApi";
+import BookModel from "../../../models/BookModel";
 import BookProp from "./wishListComponent/BookProp";
 
 const BookInWishList: React.FC = () => {

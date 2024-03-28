@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import CartItemModel from "../../../models/CartItemModel";
-import BookModel from "../../../models/BookModel";
-import { deleteCartItem, getBookInCartItem } from "../../../api/cartApi";
-import ImageModel from "../../../models/ImageModel";
-import { getImagesByBookId } from "../../../api/imageApi";
-import RenderRating from "../../../util/RenderRating";
-import Format from "../../../util/ToLocaleString";
+import CartItemModel from "../../../../models/CartItemModel";
+import BookModel from "../../../../models/BookModel";
+import { deleteCartItem, getBookInCartItem } from "../../../../api/cartApi";
+import ImageModel from "../../../../models/ImageModel";
+import { getImagesByBookId } from "../../../../api/imageApi";
+import RenderRating from "../../../../util/RenderRating";
+import Format from "../../../../util/ToLocaleString";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 interface BookInCartITemInterface {

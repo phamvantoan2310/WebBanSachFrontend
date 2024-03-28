@@ -8,14 +8,15 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import BookDetail from './layouts/product/bookDetail';
 import Register from './layouts/user/register';
 import Activate from './layouts/user/activate';
-import Login from './layouts/user/login';
-import Test from './layouts/user/test';
+import Login from './layouts/account/login';
 import AddBook_Admin from './layouts/admin/addBook';
 import ListBook from './layouts/product/listBook';
-import WishListItem from './layouts/wishList/wishListItem';
-import BookInWishList from './layouts/wishList/bookInWishList';
-import Cart from './layouts/cart/cart';
-import Pay from './layouts/cart/pay';
+import WishListItem from './layouts/user/wishList/wishListItem';
+import BookInWishList from './layouts/user/wishList/bookInWishList';
+import Cart from './layouts/user/cart/cart';
+import Pay from './layouts/user/cart/pay';
+import Account from './layouts/account/account';
+import Order from './layouts/user/order/order';
 
 function App() {
   const [bookName, setBookName] = useState<string>("");
@@ -27,17 +28,19 @@ function App() {
         <Navbar bookName={bookName} setBookName={setBookName} />
         <Routes>
           <Route path='/' element={<HomePage bookName={bookName}/>}/>
-          <Route path='/:categoryID' element={<HomePage bookName={bookName}/>}/>   {/* truyền vào mã thể loại */}
-          <Route path='/book/:bookID' element={<BookDetail />}/>
+          <Route path='/:categoryID' element={<HomePage bookName={bookName}/>}/>   {/* truyền vào mã thể loại, navbar */}
+          <Route path='/book/:bookID' element={<BookDetail />}/>                   {/*bookProp */}
           <Route path='/user/register' element={<Register />}/>
-          <Route path='/user/activate/:email/:activationCode' element={<Activate />} />
+          <Route path='/user/activate/:email/:activationCode' element={<Activate />} />  {/*Backend  accountActivate*/}
           <Route path='/user/login' element={<Login />}/>
-          <Route path='/user/test' element={<Test />}/>
           <Route path='/admin/addbook' element={<AddBook_Admin />}/>
-          <Route path='/user/wishList' element={<WishListItem />}/>
-          <Route path='/user/wishList/:wishListID/:wishListName' element={<BookInWishList/>}/>
-          <Route path='/user/cart' element={<Cart />}/>
-          <Route path='/user/pay' element={<Pay />}/>
+          <Route path='/user/wishList' element={<WishListItem />}/>                  {/*navbar */}
+          <Route path='/user/wishList/:wishListID/:wishListName' element={<BookInWishList/>}/> {/* wishListItem*/}
+          <Route path='/user/cart' element={<Cart />}/> {/*navbar */}
+          <Route path='/user/pay' element={<Pay />}/>   {/*cart */}
+          <Route path='/user/pay/:bookIDOk/:NumberOfBook' element={<Pay />}/> {/*bookDetail */}
+          <Route path='/account' element={<Account />}/> {/*navbar */}
+          <Route path='/user/order' element={<Order />}/> {/*Account */}
         </Routes>
         <Footer />
       </BrowserRouter>

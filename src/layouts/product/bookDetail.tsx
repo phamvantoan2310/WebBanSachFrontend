@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import BookModel from "../../models/BookModel";
 import { getABook } from "../../api/bookApi";
 import ImageBookDetail from "./BookDetailComponent/ImageBookDetail";
@@ -54,42 +54,42 @@ const BookDetail: React.FC = () => {
         )
     }, [bookIDOk])
 
-    const increasing = () =>{
-        const inventoryQuantity = (Book && Book.number_of_book?Book.number_of_book:0);
-        if(NumberOfBook < inventoryQuantity){
+    const increasing = () => {
+        const inventoryQuantity = (Book && Book.number_of_book ? Book.number_of_book : 0);
+        if (NumberOfBook < inventoryQuantity) {
             setNumberOfBook(NumberOfBook + 1);
         }
     }
 
-    const decreasing = () =>{
-        if(NumberOfBook >= 2){
-            setNumberOfBook(NumberOfBook -1);
+    const decreasing = () => {
+        if (NumberOfBook >= 2) {
+            setNumberOfBook(NumberOfBook - 1);
         }
     }
 
-    const handleNumberOfBookChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
+    const handleNumberOfBookChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newNumberOfBook = parseInt(e.target.value);
-        const inventoryQuantity = (Book && Book.number_of_book?Book.number_of_book:0);
-        if(!isNaN(newNumberOfBook) && newNumberOfBook >= 1 && newNumberOfBook <= inventoryQuantity){
+        const inventoryQuantity = (Book && Book.number_of_book ? Book.number_of_book : 0);
+        if (!isNaN(newNumberOfBook) && newNumberOfBook >= 1 && newNumberOfBook <= inventoryQuantity) {
             setNumberOfBook(newNumberOfBook);
         }
     }
 
-    const handleBuyNow = () =>{
+    const handleBuyNow = () => {
 
     }
 
-    const handleAddToCart = () =>{
+    const handleAddToCart = () => {
         const token = localStorage.getItem("tokenLogin");
-        if(token== null){
+        if (token == null) {
             navigate("/user/login");
-        }else{
+        } else {
             addCartItem(bookIDOk, NumberOfBook, token).then(
-                result=>{
+                result => {
                     alert("Thêm sản phẩm thành công!");
                 }
             ).catch(
-                error=>{
+                error => {
                     console.log(error);
                     alert("Thêm sản phẩm thất bại!");
                 }
@@ -138,7 +138,7 @@ const BookDetail: React.FC = () => {
                         <div className="mb-2">Số lượng</div>
                         <div className="d-flex align-items-center">
                             <button className="btn btn-outline-secondary me-2" onClick={decreasing}>-</button>
-                            <input className="form-control text-center" type="number" value={NumberOfBook} min={1} onChange={handleNumberOfBookChange}/>
+                            <input className="form-control text-center" type="number" value={NumberOfBook} min={1} onChange={handleNumberOfBookChange} />
                             <button className="btn btn-outline-secondary ms-2" onClick={increasing}>+</button>
                         </div>
                         {
@@ -150,7 +150,9 @@ const BookDetail: React.FC = () => {
                             )
                         }
                         <div className="d-grid gap-2">
-                            <button type="button" className="btn btn-danger mt-3" onClick={handleBuyNow}>Mua ngay</button>
+                            <Link to={`/user/pay/${bookIDOk}/${NumberOfBook}`}>
+                                <button type="button" className="btn btn-danger mt-3 w-100" onClick={handleBuyNow}>Mua ngay</button>
+                            </Link>
                             <button type="button" className="btn btn-outline-secondary mt-2" onClick={handleAddToCart}>Thêm vào giỏ hàng</button>
                         </div>
                     </div>

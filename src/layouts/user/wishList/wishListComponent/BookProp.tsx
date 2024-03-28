@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import BookModel from "../../../models/BookModel";
-import ImageModel from "../../../models/ImageModel";
-import { getImagesByBookId } from "../../../api/imageApi";
+import BookModel from "../../../../models/BookModel";
+import ImageModel from "../../../../models/ImageModel";
+import { getImagesByBookId } from "../../../../api/imageApi";
 import { Link } from "react-router-dom";
-import RenderRating from "../../../util/RenderRating";
-import Format from "../../../util/ToLocaleString";
+import RenderRating from "../../../../util/RenderRating";
+import Format from "../../../../util/ToLocaleString";
 
 interface bookPropInterface {
     book: BookModel;
@@ -33,7 +33,7 @@ const BookProp: React.FC<bookPropInterface> = ({ book, wishListID }) => {
         );
     }, [])
 
-    const handleRemoveBookInWishList = async() => {
+    const handleRemoveBookInWishList = async () => {
         const endpoint = "http://localhost:8080/user/removebookinwishlist";
         const requestData = {
             bookID: book.book_id,
@@ -117,7 +117,9 @@ const BookProp: React.FC<bookPropInterface> = ({ book, wishListID }) => {
                         </div>
                         <div className="col-6">
                             <button className="btn btn-danger btn-block">
-                                <i className="fas fa-shopping-cart"></i>
+                                <Link to={`/book/${book.book_id}`} style={{color:"white"}}>
+                                    <i className="fas fa-shopping-cart"></i>
+                                </Link>
                             </button>
                         </div>
                         <h5 className="card-title mt-5 text-end">{RenderRating(book.point ? book.point : 0)}</h5>

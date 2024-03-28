@@ -90,3 +90,39 @@ export async function getABook(bookID: number): Promise<BookModel | null> {
         return null;
     }
 }
+
+export async function getBookByOrderItemID(orderItemID:number, token: string) {
+    const endpoint = `http://localhost:8080/order-items/${orderItemID}/book`;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization' : `Bearer ${token}`
+            },
+        });
+
+        if(!response.ok){
+            throw new Error("fail call api getBookByOrderItemID");
+        }
+
+        const responseData = await response.json();
+        if(responseData){
+            return{
+                book_id: responseData.bookID,
+                book_name: responseData.bookName,
+                description: responseData.decription,
+                price: responseData.price,
+                listed_price: responseData.listedPrice,
+                number_of_book: responseData.numberOfBooks,
+                point: responseData.point,
+                author_id: responseData.author_id
+            }
+        }else{
+            throw new Error("book undefined");
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}

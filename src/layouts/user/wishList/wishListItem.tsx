@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import WishList from "../../models/WishList";
+import WishList from "../../../models/WishList";
 import { jwtDecode } from "jwt-decode";
-import { addWishList, getWishList } from "../../api/wishListApi";
+import { addWishList, getWishList } from "../../../api/wishListApi";
 
 const WishListItem: React.FC = () => {
     const navigate = useNavigate();

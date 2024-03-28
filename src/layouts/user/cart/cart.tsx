@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import CartModel from "../../models/CartModel";
-import { deleteAllCartItem, getBookInCartItem, getCart, getCartItem } from "../../api/cartApi";
-import CartItemModel from "../../models/CartItemModel";
-import Format from "../../util/ToLocaleString";
-import BookModel from "../../models/BookModel";
+import CartModel from "../../../models/CartModel";
+import { deleteAllCartItem, getBookInCartItem, getCart, getCartItem } from "../../../api/cartApi";
+import CartItemModel from "../../../models/CartItemModel";
+import Format from "../../../util/ToLocaleString";
+import BookModel from "../../../models/BookModel";
 import { Link, useNavigate } from "react-router-dom";
-import RenderRating from "../../util/RenderRating";
+import RenderRating from "../../../util/RenderRating";
 import BookInCartITem from "./cartComponent/bookInCartItem";
 
 const Cart: React.FC = () => {
@@ -113,7 +113,7 @@ const Cart: React.FC = () => {
                     <h4 className="text-start">Địa chỉ nhận hàng: </h4>
                     <h5 className="text-end mb-5" style={{ color: "orange" }}>{cart?.deliveryAddress}</h5>
                     <Link to={"/user/pay"}>
-                        <button type="button" className="btn btn-success mt-5 w-50">Mua ngay</button>
+                        <button type="button" className="btn btn-success mt-5 w-50">Thanh toán</button>
                     </Link>
                 </div>
             </div>

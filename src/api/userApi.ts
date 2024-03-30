@@ -43,7 +43,8 @@ export async function getAUserByEvaluateID(evaluateID: number): Promise<UserMode
                 email: responseData.email,
                 address: responseData.address,
                 phone_number: responseData.phoneNumber,
-                sex: responseData.sex
+                sex: responseData.sex,
+                avatar: responseData.avatar,
             }
         } else {
             throw new Error("Author andefined");

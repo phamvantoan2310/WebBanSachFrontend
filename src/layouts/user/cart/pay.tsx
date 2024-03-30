@@ -250,7 +250,7 @@ const Pay: React.FC = () => {
                 headers: {
                     token: tokenStripe.id,
                     amount: totalPrice + "",
-                    'Authorization' : `Bearer ${token}`
+                    Authorization : `Bearer ${token}`
                 }
             }).then(() => {
                 setStripeCondition(false);

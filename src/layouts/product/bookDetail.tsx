@@ -9,6 +9,8 @@ import Evaluate from "./BookDetailComponent/Evaluate";
 import RenderRating from "../../util/RenderRating";
 import Format from "../../util/ToLocaleString";
 import { addCartItem } from "../../api/cartApi";
+import { getCategoryByBookID } from "../../api/categoryApi";
+import CategoryModel from "../../models/CategoryModel";
 
 const BookDetail: React.FC = () => {
     const { bookID } = useParams();
@@ -29,6 +31,7 @@ const BookDetail: React.FC = () => {
     const [error, setError] = useState(null);
     const [Author, setAuthor] = useState<AuthorModel | null>(null);
     const [NumberOfBook, setNumberOfBook] = useState(1);
+    const [categorys, setCategorys] = useState<CategoryModel[] | undefined>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -51,6 +54,18 @@ const BookDetail: React.FC = () => {
                 setAuthor(author);
             }
         ).catch(
+        )
+    }, [bookIDOk])
+
+    useEffect(() => {
+        getCategoryByBookID(bookIDOk).then(
+            result => {
+                setCategorys(result);
+            }
+        ).catch(
+            error => {
+                console.log(error);
+            }
         )
     }, [bookIDOk])
 
@@ -125,11 +140,15 @@ const BookDetail: React.FC = () => {
                         <div className="card-body">
                             <h3 className="card-title">{Book?.book_name}</h3>
                             <br />
+                            <p className="card-text text-end" style={{ fontSize: "0.75em" }}>{categorys?.map((category) => category.categoryName + "-")}</p>
+                            <br />
                             <h3 className="card-title text-end">{RenderRating(Book?.point ? Book.point : 0)}</h3>
                             <br />
                             <h4 className="card-subtitle mb-2 text-danger text-end" >{Format(Book?.price)} đ</h4>
                             <br />
-                            <p className="card-text text-end">Tác Giả: {Author?.author_name}</p>
+                            <Link to={`/author/${Author?.author_id}`} style={{textDecoration:"none"}}>
+                                <p className="card-text text-end">Tác Giả: {Author?.author_name}</p>
+                            </Link>
                         </div>
                     </div>
                 </div>

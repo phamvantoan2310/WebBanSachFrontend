@@ -2,30 +2,30 @@ import React, { useEffect, useState } from "react";
 import UserModel from "../../../models/UserModel";
 import { getAUserByEvaluateID } from "../../../api/userApi";
 
-interface UserEvaluateInterface{
+interface UserEvaluateInterface {
     evaluateID: number;
 }
 
-const UserEvaluate : React.FC<UserEvaluateInterface> = (Props) =>{
+const UserEvaluate: React.FC<UserEvaluateInterface> = (Props) => {
     const evaluateID: number = Props.evaluateID;
 
-    const[user, setuser] = useState<UserModel | null>(null);
-    const[dataload, setdataload] = useState<boolean>(true);
-    const[error,seterror] = useState(null);
+    const [user, setuser] = useState<UserModel | null>(null);
+    const [dataload, setdataload] = useState<boolean>(true);
+    const [error, seterror] = useState(null);
 
-    useEffect(()=>{
+    useEffect(() => {
         getAUserByEvaluateID(evaluateID).then(
-            result=>{
+            result => {
                 setuser(result);
                 setdataload(false);
             }
         ).catch(
-            error=>{
+            error => {
                 seterror(error);
                 setdataload(false);
             }
         )
-    },[evaluateID])
+    }, [evaluateID])
 
     if (dataload) {
         return (
@@ -44,9 +44,14 @@ const UserEvaluate : React.FC<UserEvaluateInterface> = (Props) =>{
     }
 
 
-    return(
-        <div className="container text-start">
-            <h3>{user?.user_name}</h3>
+    return (
+        <div className="container text-start row">
+            <div className="col-md-2">
+                <img src={"data:image/png;base64," + user?.avatar} style={{ width: '50px' }} />
+            </div>
+            <div className="col-md-3">
+                <h3>{user?.user_name}</h3>
+            </div>
         </div>
     );
 }

@@ -1,12 +1,18 @@
 import { jwtDecode } from "jwt-decode";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import CategoryModel from "../../models/CategoryModel";
+import { getAllCategory } from "../../api/categoryApi";
+import { error } from "console";
 interface navbarInterface {
   bookName: string;
   setBookName: (name: string) => void;
 }
 
 const Navbar: React.FC<navbarInterface> = (props) => {
+  const [categorys, setCategorys] = useState<CategoryModel[] | undefined>([]);
+
+
   const [temporaryBookName, setTemporaryBookName] = useState<string>("");
 
   const onSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -20,12 +26,22 @@ const Navbar: React.FC<navbarInterface> = (props) => {
 
   const navigate = useNavigate();
 
-
+  useEffect(()=>{
+    getAllCategory().then(
+      result=>{
+        setCategorys(result);
+      }
+    ).catch(
+      error=>{
+        console.log(error);
+      }
+    )
+  },[])
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top ">
       <div className="container-fluid">
-        <NavLink className="navbar-brand" to="/">Bookstore</NavLink>
+        <NavLink className="navbar-brand" to="/">Bookstore</NavLink>  {/* trang chủ */}
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -39,27 +55,9 @@ const Navbar: React.FC<navbarInterface> = (props) => {
               <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Thể loại sách
               </a>
-              <ul className="dropdown-menu" aria-labelledby="navbarDropdown1">
-                <li><NavLink className="dropdown-item" to="/1">Thiếu nhi </NavLink></li>
-                <li><NavLink className="dropdown-item" to="/2">Hài hước</NavLink></li>
-                <li><NavLink className="dropdown-item" to="/3">Nhật ký</NavLink></li>
-                <li><NavLink className="dropdown-item" to="/4">Truyện ngắn</NavLink></li>
-                <li><NavLink className="dropdown-item" to="/5">Truyện dài</NavLink></li>
-                <li><NavLink className="dropdown-item" to="/6">Tâm sự</NavLink></li>
+              <ul className="dropdown-menu" aria-labelledby="navbarDropdown1">  {/* danh sách thể loại */}
+                {categorys?.map(category=>(<li><NavLink className="dropdown-item" to={`/${category.categoryID}`}>{category.categoryName} </NavLink></li>))}
               </ul>
-            </li>
-            <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Quy định bán hàng
-              </a>
-              <ul className="dropdown-menu" aria-labelledby="navbarDropdown2">
-                <li><a className="dropdown-item" href="#">Quy định 1</a></li>
-                <li><a className="dropdown-item" href="#">Quy định 2</a></li>
-                <li><a className="dropdown-item" href="#">Quy định 3</a></li>
-              </ul>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#">Liên hệ</a>
             </li>
           </ul>
         </div>
@@ -71,6 +69,7 @@ const Navbar: React.FC<navbarInterface> = (props) => {
         </div>
 
 
+        {/* danh sách yêu thích */}
         <ul className="navbar-nav me-2" style={{ paddingLeft: '10px' }}>
           <li className="nav-item" style={{ marginRight: "10px" }}>
             <NavLink to={"/user/wishList"} style={{ color: 'red' }}>
@@ -88,7 +87,7 @@ const Navbar: React.FC<navbarInterface> = (props) => {
           </li>
         </ul>
 
-
+        {/* account */}
         {token != null && (
           < ul className="navbar-nav me-1">
             <li className="nav-item" style={{ marginRight: "10px" }}>

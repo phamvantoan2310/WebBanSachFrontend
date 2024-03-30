@@ -5,31 +5,32 @@ import OrderItem from "./orderComponent/orderItem";
 import Format from "../../../util/ToLocaleString";
 import { deleteOrder } from "../../../api/orderApi";
 import { error } from "console";
+import { Star, StarFill } from "react-bootstrap-icons";
 
 const Order: React.FC = () => {
     let { state } = useLocation();
-    const [orders, setOrders] = useState<OrderModel[]> (state.orders);
+    const [orders, setOrders] = useState<OrderModel[]>(state.orders);
     const token = localStorage.getItem("tokenLogin");
     const navigate = useNavigate();
 
-    const handleDeleteOrder = (orderID: number) =>{
-        if(token!=null){
+
+    const handleDeleteOrder = (orderID: number) => {
+        if (token != null) {
             deleteOrder(orderID, token).then(
-                result=>{
+                result => {
                     const updatedOrders = orders.filter(order => order.orderID !== orderID);
                     setOrders(updatedOrders);
                     alert("xóa thành công");
                 }
             ).catch(
-                error=>{
+                error => {
                     console.log(error);
                 }
             )
-        }else{
+        } else {
             navigate("/user/login");
             return;
         }
-        
     }
 
     return (
@@ -53,10 +54,12 @@ const Order: React.FC = () => {
                     </div>
                     <div className="col-md-6">
                         <h3 className="text-end pt-1">Thanh toán: {Format(order.totalPrice)} đ</h3>
-                        <button className="btn btn-danger w-25" style={{marginLeft:"370px"}} onClick={()=>{handleDeleteOrder(order.orderID)}}>Xóa</button>
+                        {(order.orderStatus == "Hoàn Thành") && (<div>
+                            <button className="btn btn-danger w-25" style={{ marginLeft: "370px" }} onClick={() => { handleDeleteOrder(order.orderID) }}>Xóa</button>
+                        </div>)}
                     </div>
                     <OrderItem order={order}/>
-                    
+
                 </div>
             ))}
         </div>

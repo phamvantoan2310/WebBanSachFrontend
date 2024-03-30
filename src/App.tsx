@@ -17,6 +17,7 @@ import Cart from './layouts/user/cart/cart';
 import Pay from './layouts/user/cart/pay';
 import Account from './layouts/account/account';
 import Order from './layouts/user/order/order';
+import Author from './layouts/user/author/Author';
 
 function App() {
   const [bookName, setBookName] = useState<string>("");
@@ -41,6 +42,7 @@ function App() {
           <Route path='/user/pay/:bookIDOk/:NumberOfBook' element={<Pay />}/> {/*bookDetail */}
           <Route path='/account' element={<Account />}/> {/*navbar */}
           <Route path='/user/order' element={<Order />}/> {/*Account */}
+          <Route path='/author/:authorID' element={<Author />}/>
         </Routes>
         <Footer />
       </BrowserRouter>

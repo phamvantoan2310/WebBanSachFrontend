@@ -126,3 +126,40 @@ export async function getBookByOrderItemID(orderItemID:number, token: string) {
         return null;
     }
 }
+
+export async function getBookByAuthorID(authorID:number) {
+    const books: BookModel[] = [];
+    const endpoint = `http://localhost:8080/authors/${authorID}/bookList`;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+            },
+        });
+
+        if(!response.ok){
+            throw new Error("fail call api findBookByAuthorID");
+        }
+
+        const responseData = await response.json();
+        const data = responseData._embedded.books;
+
+        for (const item of data) {             //sử dụng for in không được vì có thể là lỗi từ các thuộc tính không mong muốn từ prototype của mảng
+            books.push({
+                book_id: item.bookID,
+                book_name: item.bookName,
+                description: item.decription,
+                price: item.price,
+                listed_price: item.listedPrice,
+                number_of_book: item.numberOfBooks,
+                point: item.point,
+                author_id: item.author_id
+            });
+        }
+
+        return books;
+    } catch (error) {
+        console.log(error);
+    }
+}

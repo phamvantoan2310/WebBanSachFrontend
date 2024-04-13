@@ -102,11 +102,208 @@ export async function getAUser(token: string): Promise<UserModel | null> {
                 avatar: responseData.avatar,
             }
         } else {
-            throw new Error("Author andefined");
+            throw new Error("user andefined");
         }
     } catch (error) {
         console.error("ERROR: " + error);
         return null;
+    }
+}
+
+export async function getUserByReportID(token: string, reportID: number) {
+    const endpoint = `http://localhost:8080/reports/${reportID}/user`;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("fail call api getUserByReportID");
+        }
+        const responseData = await response.json();
+
+        if (responseData) {
+            return ({
+                user_id: responseData.userID,
+                password: responseData.password,
+                user_name: responseData.userName,
+                birthday: responseData.birthday,
+                email: responseData.email,
+                address: responseData.address,
+                phone_number: responseData.phoneNumber,
+                sex: responseData.sex,
+                avatar: responseData.avatar,
+            });
+        } else {
+            throw new Error("user undefined");
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+export async function getUserByRoleID(token: string, roleID: number) {
+    const endpoint = `http://localhost:8080/users/search/findByRoleList_RoleID?roleID=${roleID}&size=12&page=0`;
+    const users: UserModel[] = [];
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("fail call api getUserByRoleID");
+        }
+        const responseData = await response.json();
+        const data = responseData._embedded.users;
+
+        for (const user of data) {
+            users.push({
+                user_id: user.userID,
+                password: user.password,
+                user_name: user.userName,
+                birthday: user.birthday,
+                email: user.email,
+                address: user.address,
+                phone_number: user.phoneNumber,
+                sex: user.sex,
+                avatar: user.avatar,
+            });
+        }
+        return users;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getUserByUserID(token: string, userID: number): Promise<UserModel | null> {
+    const endpoint: string = `http://localhost:8080/users/${userID}`;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("fail call API getUserByUserID");
+        }
+        const responseData = await response.json(); //gọi endpoint lấy kết quả dạng json 
+
+        if (responseData) {
+            return {
+                user_id: responseData.userID,
+                password: responseData.password,
+                user_name: responseData.userName,
+                birthday: responseData.birthday,
+                email: responseData.email,
+                address: responseData.address,
+                phone_number: responseData.phoneNumber,
+                sex: responseData.sex,
+                avatar: responseData.avatar,
+            }
+        } else {
+            throw new Error("user andefined");
+        }
+    } catch (error) {
+        console.error("ERROR: " + error);
+        return null;
+    }
+}
+
+export async function staffUpdateUser(token: string, userID: number, userName: string, password: string, email: string, phoneNumber: string, sex: boolean, address: string, avatar: string) {
+    const endpoint = "http://localhost:8080/staff/updateuser";
+    try {
+        const response = await fetch(endpoint, {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                userID: userID,
+                userName: userName,
+                password: password,
+                email: email,
+                phoneNumber: phoneNumber,
+                sex: sex,
+                address: address,
+                avatar: avatar,
+            })
+        });
+
+        if(!response.ok){
+            throw new Error("fail call api staffUpdateUser");
+        }
+
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getUserByUserNameContaining(token: string, userName:string) {
+    const endpoint = `http://localhost:8080/users/search/findByUserNameContainingAndRoleList_RoleID?userName=${userName}&roleID=3`;
+    const users : UserModel[] = [];
+    try {
+        const response = await fetch(endpoint, {
+            method:'GET',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization' : `Bearer ${token}`
+            }
+        });
+        if(!response.ok){
+            throw new Error("fail call api getUserByUserNameContaining");
+        }
+        const responseData = await response.json();
+        const data = responseData._embedded.users;
+        for(const userData of data){
+            users.push({
+                user_id: userData.userID,
+                password: userData.password,
+                user_name: userData.userName,
+                birthday: userData.birthday,
+                email: userData.email,
+                address: userData.address,
+                phone_number: userData.phoneNumber,
+                sex: userData.sex,
+                avatar: userData.avatar,
+            });
+        }
+
+        return users;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function deleteUser(token:string, userID: number) {
+    const endpoint = "http://localhost:8080/staff/deleteuser";
+    try {
+        const response = await fetch(endpoint, {
+            method: 'DELETE',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization' : `Bearer ${token}`
+            },
+            body: JSON.stringify(userID)
+        });
+
+        if(!response.ok){
+            throw new Error("fail call api deleteUser");
+        }
+        return response;
+    } catch (error) {
+        console.log(error);
     }
 }
 

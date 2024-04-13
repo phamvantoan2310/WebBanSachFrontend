@@ -7,6 +7,13 @@ import RenderRating from "../../../util/RenderRating";
 import Format from "../../../util/ToLocaleString";
 import WishList from "../../../models/WishList";
 import { getWishList } from "../../../api/wishListApi";
+import { jwtDecode } from "jwt-decode";
+
+interface JwtPayload {
+    isAdmin: boolean;
+    isStaff: boolean;
+    isUser: boolean;
+}
 
 interface bookPropInterface {
     book: BookModel;
@@ -20,6 +27,18 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
     const token = localStorage.getItem("tokenLogin");
     const [wishListCondition, setWishListCondition] = useState(false);
     const [wishLists, setWishLists] = useState<WishList[]>([]);
+
+    const [staffCondition, setStaffCondition] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (token) {
+            const decodeJwt = jwtDecode(token) as JwtPayload;
+            const isStaff = decodeJwt.isStaff;
+            if (isStaff) {
+                setStaffCondition(true);
+            }
+        }
+    }, [token])
 
     useEffect(() => {
         const masach: number = book.book_id;
@@ -104,14 +123,22 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
     return (
         <div className="col-md-3 mt-2">
             <div className="card" style={{ blockSize: "700px", height: "680px" }}>
-                <Link to={`/book/${book.book_id}`}>
-                    <img
+                {staffCondition ? (                                          //tùy chỉnh hiển thị phụ thuộc vào quyền
+                    <img 
                         src={"data:image/png;base64," + dulieuanh}
                         className="card-img-top"
                         alt={book.book_name}
                         style={{ height: '450px' }}
                     />
-                </Link>
+                ) :
+                    (<Link to={`/book/${book.book_id}`}>
+                        <img
+                            src={"data:image/png;base64," + dulieuanh}
+                            className="card-img-top"
+                            alt={book.book_name}
+                            style={{ height: '450px' }}
+                        />
+                    </Link>)}
 
 
                 {wishListCondition && (     // WishList
@@ -125,33 +152,38 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
 
 
                 <div className="card-body">
-                    <Link to={`/book/${book.book_id}`} style={{ textDecoration: 'none' }}>
-                        <h5 className="card-title">{book.book_name}</h5>
-                    </Link>
+                    {staffCondition ? (<h5 className="card-title">{book.book_name}</h5>) :         //tùy chỉnh hiển thị phụ thuộc vào quyền
+                        (<Link to={`/book/${book.book_id}`} style={{ textDecoration: 'none' }}>
+                            <h5 className="card-title">{book.book_name}</h5>
+                        </Link>)}
                     <div className="price mb-3">
                         <span className="original-price" style={{ paddingRight: "10px" }}>
-                            <del style={{color:"red"}}>{Format(book.listed_price)} đ</del>
+                            <del style={{ color: "red" }}>{Format(book.listed_price)} đ</del>
                         </span>
 
                         <span className="discounted-price">
                             <strong>{Format(book.price)} đ</strong>
                         </span>
                     </div>
-                    <div className="row mt-2" role="group">
-                        <div className="col-6">
-                            <button className="btn btn-secondary btn-block" onClick={() => { handleGetWishList(); setWishListCondition(true) }}>
-                                <i className="fas fa-heart"></i>
-                            </button>
-                        </div>
-                        <div className="col-6">
-                            <button className="btn btn-danger btn-block">
-                                <NavLink to={`/book/${book.book_id}`}>
-                                    <i className="fas fa-shopping-cart" style={{color:"white"}}></i>
-                                </NavLink>
-                            </button>
-                        </div>
-                        <h5 className="card-title mt-5 text-end">{RenderRating(book.point ? book.point : 0)}</h5>
-                    </div>
+                    {staffCondition ?                        //tùy chỉnh hiển thị phụ thuộc vào quyền
+                        (<Link to={`/staff/changebookinformation/${book.book_id}`}>
+                            <button className="btn btn-success w-50 mt-4">Sửa</button>
+                        </Link>) :
+                        (<div className="row mt-2" role="group">
+                            <div className="col-6">
+                                <button className="btn btn-secondary btn-block" onClick={() => { handleGetWishList(); setWishListCondition(true) }}>
+                                    <i className="fas fa-heart"></i>
+                                </button>
+                            </div>
+                            <div className="col-6">
+                                <button className="btn btn-danger btn-block">
+                                    <NavLink to={`/book/${book.book_id}`}>
+                                        <i className="fas fa-shopping-cart" style={{ color: "white" }}></i>
+                                    </NavLink>
+                                </button>
+                            </div>
+                            <h5 className="card-title mt-5 text-end">{RenderRating(book.point ? book.point : 0)}</h5>
+                        </div>)}
                 </div>
             </div>
         </div>

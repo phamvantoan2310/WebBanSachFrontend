@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import OrderModel from "../../../models/OrderModel";
 import OrderItem from "./orderComponent/orderItem";
 import Format from "../../../util/ToLocaleString";
-import { deleteOrder } from "../../../api/orderApi";
+import { completeOrder, deleteOrder } from "../../../api/orderApi";
 import { error } from "console";
 import { Star, StarFill } from "react-bootstrap-icons";
 
@@ -14,7 +14,7 @@ const Order: React.FC = () => {
     const navigate = useNavigate();
 
 
-    const handleDeleteOrder = (orderID: number) => {
+    const handleOrderDelete = (orderID: number) => {
         if (token != null) {
             deleteOrder(orderID, token).then(
                 result => {
@@ -28,6 +28,24 @@ const Order: React.FC = () => {
                 }
             )
         } else {
+            navigate("/user/login");
+            return;
+        }
+    }
+
+    const handleOrderComplete = (orderID: number) => {
+        if(token){
+            completeOrder(token, orderID).then(
+                result=>{
+                    alert("Cảm ơn đã xác nhận đơn hàng");
+                    navigate("/account");
+                }
+            ).catch(
+                error=>{
+                    alert("Gặp lỗi trong quá trình hoàn thiện đơn hàng");
+                }
+            )
+        }else{
             navigate("/user/login");
             return;
         }
@@ -54,12 +72,17 @@ const Order: React.FC = () => {
                     </div>
                     <div className="col-md-6">
                         <h3 className="text-end pt-1">Thanh toán: {Format(order.totalPrice)} đ</h3>
+                        {(order.orderStatus == "Đơn Hàng Đang Được Giao") && (<div>
+                            <Link to={`/user/report/${order.orderID}`}>
+                                <button className="btn btn-warning w-25 mt-5" style={{ marginLeft: "370px" }}>Báo cáo</button>
+                            </Link>
+                            <button className="btn btn-success w-25 mt-5" style={{ marginLeft: "370px" }} onClick={() => handleOrderComplete(order.orderID)}>Đã nhận được sách</button>
+                        </div>)}
                         {(order.orderStatus == "Hoàn Thành") && (<div>
-                            <button className="btn btn-danger w-25" style={{ marginLeft: "370px" }} onClick={() => { handleDeleteOrder(order.orderID) }}>Xóa</button>
+                            <button className="btn btn-danger w-25 mt-5" style={{ marginLeft: "370px" }} onClick={() => { handleOrderDelete(order.orderID) }}>Xóa</button>
                         </div>)}
                     </div>
-                    <OrderItem order={order}/>
-
+                    <OrderItem order={order} />
                 </div>
             ))}
         </div>

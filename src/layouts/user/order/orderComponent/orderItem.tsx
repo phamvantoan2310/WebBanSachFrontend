@@ -6,6 +6,10 @@ import OrderItemModel from "../../../../models/OrderItemModel";
 import Format from "../../../../util/ToLocaleString";
 import BookInOrderItem from "./bookInOrderItem";
 import { Star, StarFill } from "react-bootstrap-icons";
+import { getDeliveryTypeByOrderID } from "../../../../api/deliveryTypeApi";
+import DeliveryTypeModel from "../../../../models/DeliveryTypeModel";
+import PaymentModel from "../../../../models/PaymentModel";
+import { getPaymentByOrderID } from "../../../../api/paymentApi";
 interface OrderItemInterface {
     order: OrderModel;
 }
@@ -25,6 +29,9 @@ const OrderItem: React.FC<OrderItemInterface> = (props) => {
     }
     const [evaluate, setEvaluate] = useState("");
     const [orderItemEvaluate, setOrderItemEvaluateCondition] = useState<OrderItemModel> ();
+
+    const [deliveryType, setDeliveryType] = useState<DeliveryTypeModel | undefined>();
+    const [payment, setPayment] = useState<PaymentModel | undefined> ();
 
 
     useEffect(() => {
@@ -46,9 +53,36 @@ const OrderItem: React.FC<OrderItemInterface> = (props) => {
         }
     }, [props.order]);
 
-    const handleEvaluation = async(i: number) =>{
+    useEffect(() =>{
+        if(token){
+            getDeliveryTypeByOrderID(props.order.orderID, token).then(
+                result=>{
+                    setDeliveryType(result);
+                }
+            ).catch(
+                error=>{
+                    console.log(error);
+                }
+            )
+        }
+    }, [props.order])
+    useEffect(() =>{
+        if(token){
+            getPaymentByOrderID(token, props.order.orderID).then(
+                result=>{
+                    setPayment(result);
+                }
+            ).catch(
+                error=>{
+                    console.log(error);
+                }
+            )
+        }
+    }, [props.order])
+
+    const handleEvaluation = async(point: number) =>{
         const createEvaluateResponse = {
-            point: i,
+            point: point,
             decription: evaluate,
             orderItemID: orderItemEvaluate?.orderItemID
         }
@@ -89,13 +123,15 @@ const OrderItem: React.FC<OrderItemInterface> = (props) => {
     }
     if(orderItemCondition){
         return (
-            <div className="container mt-5" >
+            <div className="container mt-1" >
                 {evaluationCondition && (     // evaluation
                 <div className="fixed-top" style={{ top: "350px", left: "550px", right: "500px", borderRadius: "10px", backgroundColor: "white" }}>
                     <h3>Đánh giá sản phẩm</h3>
                     {stars}
                     <input className="form-control w-75 m-3 " placeholder="đánh giá" onChange={(e)=>setEvaluate(e.target.value)}></input>
                 </div>)}
+                <h5 className="text-start mb-2" style={{marginLeft:"30px"}}>Phương thức giao hàng: {deliveryType?.deliveryTypeName}</h5>
+                <h5 className="text-start" style={{marginLeft:"30px", marginBottom:"50px"}}>Phương thức thanh toán: {payment?.paymentName}</h5>
                 {orderItems?.map((orderItem) => (
                     <div className="row mb-5">
                         <div className="col-md-9">

@@ -29,3 +29,29 @@ export async function getPayment(token : string) {
         console.log(error);
     }
 }
+
+export async function getPaymentByOrderID(token : string, orderID: number) {
+    try {
+        const endpoint = `http://localhost:8080/orders/${orderID}/payment`;
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization' : `Bearer ${token}`
+            },
+        });
+        if(!response.ok){
+            throw new Error("fail call api getPaymentByOrderID");
+        }
+        const responseData = await response.json();
+
+        return ({
+            paymentID: responseData.paymentID,
+                paymentName: responseData.paymentName,
+                decription: responseData.decription,
+                priceOfPayment: responseData.priceOfPayment,
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}

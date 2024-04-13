@@ -1,39 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Banner from "./component/banner";
 import Carousel from "./component/carousel";
 import ListBook from "../product/listBook";
 import { useParams } from "react-router-dom";
 
-interface homePageInterface{
+interface homePageInterface {
     bookName: string;
 }
 
-const HomePage: React.FC<homePageInterface> = ({bookName}) => {
-    const {categoryID} = useParams();
+const HomePage: React.FC<homePageInterface> = ({ bookName }) => {
+    const { categoryID } = useParams();
     let maTheLoai = 0;
 
-    const {authorID} = useParams();
+    const { authorID } = useParams();
     let maTacGia = 0;
 
-    try{
-        maTheLoai = parseInt(categoryID+'');
-    } catch(error){
+    try {
+        maTheLoai = parseInt(categoryID + '');
+    } catch (error) {
         console.log(error);
         maTheLoai = 0;
     }
 
-    if(Number.isNaN(maTheLoai)){
+    if (Number.isNaN(maTheLoai)) {
         maTheLoai = 0;
     }
 
-    try{
-        maTacGia = parseInt(authorID+'');
-    } catch(error){
+    try {
+        maTacGia = parseInt(authorID + '');
+    } catch (error) {
         console.log(error);
         maTacGia = 0;
     }
 
-    if(Number.isNaN(maTacGia)){
+    if (Number.isNaN(maTacGia)) {
         maTacGia = 0;
     }
 
@@ -41,7 +41,7 @@ const HomePage: React.FC<homePageInterface> = ({bookName}) => {
         <div>
             <Banner />
             <Carousel />
-            <ListBook bookName={bookName} categoryID={maTheLoai} authorID={maTacGia}/>
+            <ListBook bookName={bookName} categoryID={maTheLoai} authorID={maTacGia} />
         </div>
     );
 }

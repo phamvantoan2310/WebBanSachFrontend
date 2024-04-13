@@ -8,6 +8,7 @@ const Register: React.FC = () => {
     const [email, setEmail] = useState('');
     const [phonenumber, setPhonenumber] = useState('');
     const [sex, setSex] = useState('m');
+    const [address, setAddress] = useState("");
     const [avatar, setAvatar] = useState<File | null>(null);
 
 
@@ -16,6 +17,7 @@ const Register: React.FC = () => {
     const [errorPasswordAgain, setErrorPasswordAgain] = useState<string>('');
     const [errorEmail, setErrorEmail] = useState<string>('');
     const [errorSex, setErrorSex] = useState('');
+    const [errorAddress, setErrorAddress] = useState('');
     const [notification, setNotification] = useState<string>('');
 
     //convert file to base64
@@ -37,11 +39,12 @@ const Register: React.FC = () => {
         setErrorPasswordAgain('');
         setErrorEmail('');
         setErrorSex('');
+        setErrorAddress('');
 
         // trách click liên tục
         e.preventDefault();
 
-        if (errorUserName == '' && errorPassword == '' && errorPasswordAgain == '' && errorEmail == '' && errorSex == '') {
+        if (errorUserName == '' && errorPassword == '' && errorPasswordAgain == '' && errorEmail == '' && errorSex == '' && errorAddress=='') {
 
             const fileToBase64 = avatar ? await getBase64(avatar) : null;
 
@@ -53,19 +56,20 @@ const Register: React.FC = () => {
                         'Content-type': 'application/json',
                     },
                     body: JSON.stringify({
+                        userID: 0,
                         userName: userName,
                         password: password,
                         email: email,
                         phoneNumber: phonenumber,
                         sex: (sex=='f'?0:1),
-                        avatar: fileToBase64
-                    })
+                        address: address,
+                        avatar: fileToBase64,
+                    }),
                 });
 
                 if (response.ok) {
                     setNotification("Đăng ký thành công!");
                 } else {
-                    console.log(response.json());
                     setNotification("Đã xảy ra lỗi trong quá trình đăng ký");
                 }
             } catch (error) {
@@ -212,6 +216,16 @@ const Register: React.FC = () => {
                             <option >m</option>
                             <option >f</option>
                         </select>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="diaChi" className="form-label">Địa chỉ</label>
+                        <input
+                            type="text"
+                            id="diaChi"
+                            className="form-control"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                        />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="avatar" className="form-label">Avatar</label>

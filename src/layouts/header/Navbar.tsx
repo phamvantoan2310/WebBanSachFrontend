@@ -3,7 +3,12 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import CategoryModel from "../../models/CategoryModel";
 import { getAllCategory } from "../../api/categoryApi";
-import { error } from "console";
+
+interface JwtPayload {
+  isAdmin: boolean;
+  isStaff: boolean;
+  isUser: boolean;
+}
 interface navbarInterface {
   bookName: string;
   setBookName: (name: string) => void;
@@ -11,9 +16,8 @@ interface navbarInterface {
 
 const Navbar: React.FC<navbarInterface> = (props) => {
   const [categorys, setCategorys] = useState<CategoryModel[] | undefined>([]);
-
-
   const [temporaryBookName, setTemporaryBookName] = useState<string>("");
+  const [staffCondition, setStaffCondition] = useState<boolean>(false);
 
   const onSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTemporaryBookName(e.target.value);
@@ -22,26 +26,39 @@ const Navbar: React.FC<navbarInterface> = (props) => {
     props.setBookName(temporaryBookName);
   }
 
-  const token = localStorage.getItem("tokenLogin");
-
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  const token = localStorage.getItem("tokenLogin");
+
+  useEffect(() => {
     getAllCategory().then(
-      result=>{
+      result => {
         setCategorys(result);
       }
     ).catch(
-      error=>{
+      error => {
         console.log(error);
       }
     )
-  },[])
+  }, [])
+
+
+  useEffect(() => {
+    if (token) {
+      const decodeToken = jwtDecode(token) as JwtPayload;
+      const isStaff = decodeToken.isStaff;
+      if (isStaff) {
+        setStaffCondition(true);
+      } else {
+        setStaffCondition(false);
+      }
+    }
+  }, [navigate])
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top ">
       <div className="container-fluid">
-        <NavLink className="navbar-brand" to="/">Bookstore</NavLink>  {/* trang chủ */}
+        <NavLink className="navbar-brand" to="/" style={{ color: "blueviolet" }}>Bookstore</NavLink>  {/* trang chủ */}
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -51,12 +68,15 @@ const Navbar: React.FC<navbarInterface> = (props) => {
             <li className="nav-item">
               <Link className="nav-link active" aria-current="page" to="/">Trang chủ</Link>
             </li>
+            {staffCondition && <li className="nav-item">
+              <Link className="nav-link active" aria-current="page" to="/staff/confirmorder">Xác nhận đơn hàng</Link>
+            </li>}
             <li className="nav-item dropdown">
               <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Thể loại sách
               </a>
               <ul className="dropdown-menu" aria-labelledby="navbarDropdown1">  {/* danh sách thể loại */}
-                {categorys?.map(category=>(<li><NavLink className="dropdown-item" to={`/${category.categoryID}`}>{category.categoryName} </NavLink></li>))}
+                {categorys?.map(category => (<li><NavLink className="dropdown-item" to={`/${category.categoryID}`} style={{ color: "blueviolet" }}>{category.categoryName} </NavLink></li>))}
               </ul>
             </li>
           </ul>
@@ -68,24 +88,56 @@ const Navbar: React.FC<navbarInterface> = (props) => {
           <button className="btn btn-outline-success" type="button" onClick={handleSearch}>Tìm kiếm</button>
         </div>
 
-
         {/* danh sách yêu thích */}
-        <ul className="navbar-nav me-2" style={{ paddingLeft: '10px' }}>
-          <li className="nav-item" style={{ marginRight: "10px" }}>
-            <NavLink to={"/user/wishList"} style={{ color: 'red' }}>
-              <i className="fa fa-heart" aria-hidden="true"></i>
-            </NavLink>
-          </li>
-        </ul>
+        {!staffCondition &&
+          <ul className="navbar-nav me-2" style={{ paddingLeft: '10px' }}>
+            <li className="nav-item" style={{ marginRight: "10px" }}>
+              <NavLink to={"/user/wishList"} style={{ color: 'red' }}>
+                <i className="fa fa-heart" aria-hidden="true"></i>
+              </NavLink>
+            </li>
+          </ul>}
 
         {/* Biểu tượng giỏ hàng */}
-        <ul className="navbar-nav me-1">
-          <li className="nav-item" style={{ marginRight: "15px" }}>
-            <NavLink to={"/user/cart"}>
-              <i className="fas fa-shopping-cart"></i>
-            </NavLink>
-          </li>
-        </ul>
+        {!staffCondition &&
+          <ul className="navbar-nav me-1">
+            <li className="nav-item" style={{ marginRight: "15px" }}>
+              <NavLink to={"/user/cart"}>
+                <i className="fas fa-shopping-cart"></i>
+              </NavLink>
+            </li>
+          </ul>}
+
+
+        {/* Biểu tượng lịch họp */}
+        {staffCondition &&
+          <ul className="navbar-nav me-1" style={{ paddingLeft: '10px' }}>
+            <li className="nav-item" style={{ marginRight: "10px" }}>
+              <NavLink to={"/staff/meeting"} >
+                <i className="fa fa-calendar" style={{color:"lightgray"}} aria-hidden="true"></i>
+              </NavLink>
+            </li>
+          </ul>}
+
+        {/* Biểu tượng kho */}
+        {staffCondition &&
+          <ul className="navbar-nav me-3" style={{ paddingLeft: '10px' }}>
+            <li className="nav-item" style={{ marginRight: "10px" }}>
+              <NavLink to={"/staff/warehouse"} >
+                <i className="fa fa-home" aria-hidden="true"></i>
+              </NavLink>
+            </li>
+          </ul>}
+
+        {/* Biểu tượng đơn hàng cần sử lý*/}
+        {staffCondition &&
+          <ul className="navbar-nav me-1">
+            <li className="nav-item" style={{ marginRight: "15px" }}>
+              <NavLink to={"/staff/report"} style={{ color: 'red' }}>
+                <i className="fa fa-info" style={{ color: "red" }} aria-hidden="true"></i>
+              </NavLink>
+            </li>
+          </ul>}
 
         {/* account */}
         {token != null && (

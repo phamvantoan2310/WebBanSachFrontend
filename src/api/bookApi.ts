@@ -2,6 +2,16 @@ import React from "react";
 import BookModel from "../models/BookModel";
 import { my_request } from "./request";
 
+interface book {
+    bookID: number;
+    bookName: string;
+    price: number;
+    listedPrice: number;
+    decription: string;
+    numberOfBooks: number;
+    point: number;
+}
+
 interface getResult {
     result: BookModel[];
     totalPages: number;
@@ -71,8 +81,8 @@ export async function getABook(bookID: number): Promise<BookModel | null> {
         }
         const responseData = await response.json(); //gọi endpoint lấy kết quả dạng json 
 
-        if(responseData){
-            return{
+        if (responseData) {
+            return {
                 book_id: responseData.bookID,
                 book_name: responseData.bookName,
                 description: responseData.decription,
@@ -82,33 +92,33 @@ export async function getABook(bookID: number): Promise<BookModel | null> {
                 point: responseData.point,
                 author_id: responseData.author_id
             }
-        }else{
+        } else {
             throw new Error("book undefined");
         }
-    }catch(error){
+    } catch (error) {
         console.error("ERROR: " + error);
         return null;
     }
 }
 
-export async function getBookByOrderItemID(orderItemID:number, token: string) {
+export async function getBookByOrderItemID(orderItemID: number, token: string) {
     const endpoint = `http://localhost:8080/order-items/${orderItemID}/book`;
     try {
         const response = await fetch(endpoint, {
             method: 'GET',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api getBookByOrderItemID");
         }
 
         const responseData = await response.json();
-        if(responseData){
-            return{
+        if (responseData) {
+            return {
                 book_id: responseData.bookID,
                 book_name: responseData.bookName,
                 description: responseData.decription,
@@ -118,7 +128,7 @@ export async function getBookByOrderItemID(orderItemID:number, token: string) {
                 point: responseData.point,
                 author_id: responseData.author_id
             }
-        }else{
+        } else {
             throw new Error("book undefined");
         }
     } catch (error) {
@@ -127,7 +137,7 @@ export async function getBookByOrderItemID(orderItemID:number, token: string) {
     }
 }
 
-export async function getBookByAuthorID(authorID:number) {
+export async function getBookByAuthorID(authorID: number) {
     const books: BookModel[] = [];
     const endpoint = `http://localhost:8080/authors/${authorID}/bookList`;
     try {
@@ -138,7 +148,7 @@ export async function getBookByAuthorID(authorID:number) {
             },
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api findBookByAuthorID");
         }
 
@@ -159,6 +169,150 @@ export async function getBookByAuthorID(authorID:number) {
         }
 
         return books;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function bookChange(bookID: number, bookName: string, numberOfBooks: number, listedPrice: number, price: number, decription: string, point: number, authorID: number, token: string) {
+    const endpoint = "http://localhost:8080/staff/bookchange";
+    try {
+        const Book: book = {
+            bookID: bookID,
+            bookName: bookName,
+            decription: decription,
+            listedPrice: listedPrice,
+            numberOfBooks: numberOfBooks,
+            point: point,
+            price: price
+        }
+
+        const bookChangeResponse = {
+            book: Book,
+            authorID: authorID
+        }
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(bookChangeResponse)
+        });
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function staffGetAllBook(token: string) {
+    const result: BookModel[] = [];
+    const endpoint = "http://localhost:8080/books";
+    try {
+        const response = await fetch(endpoint, {       //gọi endpoint lấy kết quả dạng json 
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        const responseData = data._embedded.books; //lấy danh sách từ kết quả vừa lấy
+
+        for (const key in responseData) {                //nhập sách vào dãy
+            result.push({
+                book_id: responseData[key].bookID,
+                book_name: responseData[key].bookName,
+                description: responseData[key].decription,
+                price: responseData[key].price,
+                listed_price: responseData[key].listedPrice,
+                number_of_book: responseData[key].numberOfBooks,
+                point: responseData[key].point,
+                author_id: responseData[key].author_id
+            });
+        };
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+}
+export async function staffFindBook(token:string, bookName: string) {
+    const books : BookModel[] = [];
+    const endpoint = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookID,desc&size=8&page=0&bookName=${bookName}`;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization' : `Bearer ${token}`
+            },
+        });
+        if(!response.ok){
+            throw new Error("fail call api staffFindBook");
+        }
+        const responseData = await response.json();
+        const data = responseData._embedded.books;
+        for (const key in data) {                //nhập sách vào dãy
+            books.push({
+                book_id: data[key].bookID,
+                book_name: data[key].bookName,
+                description: data[key].decription,
+                price: data[key].price,
+                listed_price: data[key].listedPrice,
+                number_of_book: data[key].numberOfBooks,
+                point: data[key].point,
+                author_id: data[key].author_id
+            });
+        };
+        return books;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function changeNumberOfBook(token : string, numberOfBook: number, bookID: number) {
+    const endpoint = "http://localhost:8080/staff/numberofbookchange";
+    const numberOfBookChangeResponse = {
+        bookID: bookID,
+        numberOfBook: numberOfBook
+    }
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization' : `Bearer ${token}`
+            },
+            body: JSON.stringify(numberOfBookChangeResponse)
+        });
+
+        if(!response.ok){
+            throw new Error("fail call api changeNumberOfBook");
+        }
+
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function deleteBook(token: string, bookID: number) {
+    const endpoint = "http://localhost:8080/staff/deletebook";
+    try {
+        const response = await fetch(endpoint, {
+            method: 'DELETE',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization' : `Bearer ${token}`
+            },
+            body: JSON.stringify(bookID)
+        });
+        if(!response.ok){
+            throw new Error("fail call api deleteToken");
+        }
+        return response;
     } catch (error) {
         console.log(error);
     }

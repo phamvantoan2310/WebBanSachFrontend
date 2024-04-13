@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { getAUser } from "../../api/userApi";
+import { getAUser, getUserByRoleID } from "../../api/userApi";
 import UserModel from "../../models/UserModel";
 import { jwtDecode } from "jwt-decode";
 import { Link, useNavigate } from "react-router-dom";
 import { getOrderByUserID } from "../../api/orderApi";
 import OrderModel from "../../models/OrderModel";
+
+interface JwtPayload {
+    isAdmin: boolean;
+    isStaff: boolean;
+    isUser: boolean;
+}
 
 const Account: React.FC = () => {
     const token = localStorage.getItem("tokenLogin");
@@ -18,6 +24,20 @@ const Account: React.FC = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
+
+    const [staffCondition, setStaffCondition] = useState<boolean>(false);     //role stafff
+    
+
+    useEffect(() => {
+        if (token) {
+            const dataToken = jwtDecode(token) as JwtPayload;
+            if (dataToken.isStaff) {
+                setStaffCondition(true);
+            }
+        } else {
+            navigate("/user/login");
+        }
+    }, [token])
 
     useEffect(() => {
         if (token) {
@@ -45,7 +65,7 @@ const Account: React.FC = () => {
     }, [token])
 
 
-    useEffect(() => {
+    useEffect(() => {                              //role user
         if (token && user) {
             getOrderByUserID(user?.user_id, token).then(
                 result => {
@@ -59,7 +79,7 @@ const Account: React.FC = () => {
         }
     }, [user])
 
-    const handleChangeInformationUser = async () => {
+    const handleChangeInformationUser = async () => {     
         const dataUserChange = {
             phoneNumber: phoneNumber,
             email: email,
@@ -86,6 +106,7 @@ const Account: React.FC = () => {
 
         navigate("/");
     }
+
 
     if (dataload) {
         return (
@@ -128,7 +149,7 @@ const Account: React.FC = () => {
                 </div>
                 <div className="row" style={{ paddingRight: "200px" }}>
                     <div className="col-md-6">
-                        <button className="btn" style={{ backgroundColor: "burlywood" }} onClick={() => { setFormUserCondition(formUserCondition ? false : true) }}>{formUserCondition ? "Đóng form" : "Thay đổi thông tin"}</button>
+                        <button className="btn" style={{ backgroundColor: "burlywood", marginLeft: "50px" }} onClick={() => { setFormUserCondition(formUserCondition ? false : true) }}>{formUserCondition ? "Đóng form" : "Thay đổi thông tin"}</button>
                     </div>
                     <div className="col-md-6" style={{ marginLeft: "700px" }}>
                         {formUserCondition && (<form>
@@ -149,18 +170,34 @@ const Account: React.FC = () => {
                     </div>
                 </div>
                 <hr style={{ color: "white" }} />
-                <h3 className="text-start">Đơn hàng</h3>
-                <div className="row">
-                    <div className="col-md-6">
-                        <Link to={"/user/order"} state={{orders}} style={{ textDecoration: 'none' }}>
-                            <i className="fa fa-shopping-basket" aria-hidden="true" style={{ fontSize: '50px', color:"black" }}></i>
-                            <h6 style={{ color: "white" }}>Đơn hàng({orders?.length})</h6>
-                        </Link>
+                {!staffCondition && <div>
+                    <h3 className="text-start">Đơn hàng</h3>
+                    <div className="row">
+                        <div className="col-md-6">
+                            <Link to={"/user/order"} state={{ orders }} style={{ textDecoration: 'none' }}>
+                                <i className="fa fa-shopping-basket" aria-hidden="true" style={{ fontSize: '50px', color: "black" }}></i>
+                                <h6 style={{ color: "white" }}>Đơn hàng({orders?.length})</h6>
+                            </Link>
+                        </div>
+                        <div className="col-md-6" >
+
+                        </div>
                     </div>
-                    <div className="col-md-6" >
-                
+                </div>}
+
+                {staffCondition && <div>
+                    <h3 className="text-start">Khách hàng</h3>
+                    <div className="row">
+                        <div className="col-md-6">
+                            <Link to={"/staff/user"} state={{ orders }} style={{ textDecoration: 'none' }}>
+                                <i className="fa fa-users" aria-hidden="true" style={{ fontSize: '50px', color: "black" }}></i>
+                            </Link>
+                        </div>
+                        <div className="col-md-6" >
+
+                        </div>
                     </div>
-                </div>
+                </div>}
                 <hr style={{ color: "white" }} />
                 <div className=" mt-5 pt-5">
                     <button className="btn btn-success" onClick={handleLogOut}>Đăng xuất</button>

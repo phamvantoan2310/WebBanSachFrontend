@@ -51,20 +51,23 @@ const Login = () =>{
             <div className="form-signin">
                 <h1 className="h3 mb-3 font-weight-normal">Đăng nhập</h1>
                 <label className="sr-only">Tên đăng nhập</label>
-                <input type="username" id="username" className="form-control mb-2" placeholder="UserName"
+                <input type="username" id="username" className="form-control mb-2 w-25" style={{marginLeft:"480px", backgroundColor:"gray", color:"white"}} placeholder="UserName"
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
                 />
                 <label className="sr-only">Password</label>
-                <input type="password" id="inputPassword" className="form-control mb-2" placeholder="Password" required
+                <input type="password" id="inputPassword" className="form-control mb-2 w-25" style={{marginLeft:"480px", backgroundColor:"gray", color:"white"}} placeholder="Password" required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <div className="checkbox mb-3">
+                <div className="checkbox mb-1">
                     <label>
                         <input type="checkbox" value="remember-me" /> Remember me
                     </label>
                 </div>
+                <Link to={"/user/register"} style={{textDecoration:"none"}}>
+                <p>Bạn chưa có tài khoản?</p>
+                </Link>
                 <button className="btn btn-lg btn-primary btn-block" type="button" onClick={handleLogin} >Đăng nhập</button>
                 {error && <div style={{ color: 'red' }}>{error}</div>}
             </div>

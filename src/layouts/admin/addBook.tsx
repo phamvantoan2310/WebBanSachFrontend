@@ -1,5 +1,8 @@
-import React, { FormEvent, useState } from "react"
-import RequireAdmin from "./requireAdmin";
+import React, { FormEvent, useEffect, useState } from "react"
+import RequireAdmin from "../../util/requireAdmin";
+import RequireAdminAndStaff from "../../util/requireAdminAndStaff";
+import { getAllCategory } from "../../api/categoryApi";
+import CategoryModel from "../../models/CategoryModel";
 interface image {
     imageID: number;
     imageName: string;
@@ -19,6 +22,25 @@ const AddBook: React.FC = (props) => {
         point: 0,
     })
     // const [dataImages, setDataImages] = useState<File[]>([]);
+
+    const [categorys, setCategorys] = useState<CategoryModel[] | undefined>();
+    const [categoryID, setCategoryID] = useState(0);
+    const [dataload, setdataload] = useState<boolean>(true);
+    const [error, seterror] = useState(null);
+
+    useEffect(()=>{
+        getAllCategory().then(
+            result=>{
+                setCategorys(result);
+                setdataload(false);
+            }
+        ).catch(
+            error=>{
+                seterror(error);
+                setdataload(false);
+            }
+        )
+    },[]);
 
     const [images, setImages] = useState<image[] | null>(null);
     //set image list để gửi đi
@@ -59,6 +81,16 @@ const AddBook: React.FC = (props) => {
         }
     }
 
+    const handleChangeCategory = () =>{
+        if(categorys){
+            const category = document.getElementById("category") as HTMLSelectElement | null;
+            if(category && category.value){
+                setCategoryID(parseInt(category.value))
+            }
+        }
+    }
+    
+
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
         const token = localStorage.getItem('tokenLogin');
@@ -66,7 +98,8 @@ const AddBook: React.FC = (props) => {
 
         const addBookResponse = {
             book: book,
-            images: images
+            images: images,
+            categoryID: categoryID
         }
         console.log(addBookResponse);
 
@@ -97,6 +130,22 @@ const AddBook: React.FC = (props) => {
         )
     }
 
+    if (dataload) {
+        return (
+            <div>
+                <h1>Đang tải dữ liệu</h1>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div>
+                <h1>Gặp lỗi: {error}</h1>
+            </div>
+        );
+    }
+
     return (
         <div className='container row d-flex align-items-center justify-content-center pt-5 mt-5'>
             <div className=''>
@@ -116,6 +165,12 @@ const AddBook: React.FC = (props) => {
                         onChange={(e) => setBook({ ...book, bookName: e.target.value })}
                         required
                     />
+
+                    <label htmlFor='tenSach'>Thể loại</label>
+                    <select className="form-select" id="category" aria-label="Default select example" style={{ color: "orange" }} onChange={handleChangeCategory}>
+                        <option value="9">Kéo xuống</option>
+                        {categorys?.map((category) => (<option value={category.categoryID}>{category.categoryName}</option>))}
+                    </select>
 
                     <label htmlFor='giaBan'>Giá bán</label>
                     <input
@@ -180,6 +235,6 @@ const AddBook: React.FC = (props) => {
     );
 }
 
-const AddBook_Admin = RequireAdmin(AddBook);
+const AddBook_AdminStaff = RequireAdminAndStaff(AddBook);
 
-export default AddBook_Admin;
+export default AddBook_AdminStaff;

@@ -146,7 +146,7 @@ const BookDetail: React.FC = () => {
                             <br />
                             <h4 className="card-subtitle mb-2 text-danger text-end" >{Format(Book?.price)} đ</h4>
                             <br />
-                            <Link to={`/author/${Author?.author_id}`} style={{textDecoration:"none"}}>
+                            <Link to={`/user/author/${Author?.author_id}`} style={{textDecoration:"none"}}>
                                 <p className="card-text text-end">Tác Giả: {Author?.author_name}</p>
                             </Link>
                         </div>

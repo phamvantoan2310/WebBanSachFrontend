@@ -200,22 +200,54 @@ export async function getOrderByOrderID(orderID: number, token: string) {
     }
 }
 
-export async function confirmOrder(token:string, orderID: number) {
+export async function confirmOrder(token: string, orderID: number) {
     const endpoint = "http://localhost:8080/staff/confirmorder";
     try {
         const response = await fetch(endpoint, {
-            method:'POST',
+            method: 'POST',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(orderID)
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api confirmOrder");
         }
         return response;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getOrderByDeliveryOrder(token: string, deliveryOrder: string) {
+    const endpoint = "";
+    const orders: OrderModel[] = [];
+
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const responseData = await response.json();
+        const data = responseData._embedded.orderses;
+
+        for (const orderData of data) {
+            orders.push({
+                orderID: orderData.orderID,
+                orderDate: orderData.orderDate,
+                totalPrice: orderData.totalPrice,
+                deliveryAddress: orderData.deliveryAddress,
+                deliveryDate: orderData.deliveryDate,
+                orderStatus: orderData.orderStatus
+            })
+        }
+        return orders;
     } catch (error) {
         console.log(error);
     }

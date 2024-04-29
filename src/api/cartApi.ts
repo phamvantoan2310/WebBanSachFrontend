@@ -187,7 +187,34 @@ export async function deleteAllCartItem(cartID: number, token: string) {
 export async function buyNow(deliveryTypeID: number,paymentID: number, token: string) {
     const createOrderRequest = {
         deliveryTypeID: deliveryTypeID,
-        paymentID: paymentID
+        paymentID: paymentID,
+        bookID : 0
+    }
+    try {
+        const endpoint = "http://localhost:8080/user/buynow";
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-type' : 'application/json',
+                'Authorization' : `Bearer ${token}`
+            },
+            body: JSON.stringify(createOrderRequest),
+        });
+        if(!response.ok){
+            throw new Error("fail call api buyNow");
+        }
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function buyOneBook(deliveryTypeID: number,paymentID: number, token: string, bookID: number, numberOfBook : number) {
+    const createOrderRequest = {
+        deliveryTypeID: deliveryTypeID,
+        paymentID: paymentID,
+        bookID : bookID,
+        numberOfBook : numberOfBook
     }
     try {
         const endpoint = "http://localhost:8080/user/buynow";

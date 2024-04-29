@@ -26,6 +26,8 @@ import SendReport from './layouts/user/report/sendReport';
 import User from './layouts/staff/User/user';
 import UserDetail from './layouts/staff/User/userComponent/userDetail';
 import Meeting from './layouts/staff/meeting/meeting';
+import Revenue from './layouts/admin/revenue/revenue';
+import Staff from './layouts/admin/staff/Staff';
 
 
 function App() {
@@ -62,6 +64,8 @@ function App() {
           <Route path='/staff/user' element={<User />}/>
           <Route path='/staff/user/:userID' element={<UserDetail />}/>
           <Route path='/staff/meeting' element={<Meeting />}/>
+          <Route path='/admin/revenue' element={<Revenue />}/>
+          <Route path='/admin/staff' element={<Staff />}/>
         </Routes>
         <Footer />
       </BrowserRouter>

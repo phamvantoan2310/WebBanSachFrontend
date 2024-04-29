@@ -29,14 +29,15 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
     const [wishLists, setWishLists] = useState<WishList[]>([]);
 
     const [staffCondition, setStaffCondition] = useState<boolean>(false);
+    const [adminCondition, setAdminCondition] = useState<boolean>(false);
 
     useEffect(() => {
         if (token) {
             const decodeJwt = jwtDecode(token) as JwtPayload;
             const isStaff = decodeJwt.isStaff;
-            if (isStaff) {
-                setStaffCondition(true);
-            }
+            const isAdmin = decodeJwt.isAdmin;
+            setStaffCondition(isStaff);
+            setAdminCondition(isAdmin);
         }
     }, [token])
 
@@ -123,7 +124,7 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
     return (
         <div className="col-md-3 mt-2">
             <div className="card" style={{ blockSize: "700px", height: "680px" }}>
-                {staffCondition ? (                                          //tùy chỉnh hiển thị phụ thuộc vào quyền
+                {staffCondition || adminCondition ? (                                          //tùy chỉnh hiển thị phụ thuộc vào quyền
                     <img 
                         src={"data:image/png;base64," + dulieuanh}
                         className="card-img-top"
@@ -152,7 +153,7 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
 
 
                 <div className="card-body">
-                    {staffCondition ? (<h5 className="card-title">{book.book_name}</h5>) :         //tùy chỉnh hiển thị phụ thuộc vào quyền
+                    {staffCondition || adminCondition ? (<h5 className="card-title">{book.book_name}</h5>) :         //tùy chỉnh hiển thị phụ thuộc vào quyền
                         (<Link to={`/book/${book.book_id}`} style={{ textDecoration: 'none' }}>
                             <h5 className="card-title">{book.book_name}</h5>
                         </Link>)}
@@ -165,7 +166,7 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
                             <strong>{Format(book.price)} đ</strong>
                         </span>
                     </div>
-                    {staffCondition ?                        //tùy chỉnh hiển thị phụ thuộc vào quyền
+                    {staffCondition || adminCondition ?                        //tùy chỉnh hiển thị phụ thuộc vào quyền
                         (<Link to={`/staff/changebookinformation/${book.book_id}`}>
                             <button className="btn btn-success w-50 mt-4">Sửa</button>
                         </Link>) :

@@ -4,8 +4,9 @@ import { getAllBook, staffFindBook, staffGetAllBook } from "../../../api/bookApi
 import BookInWareHouse from "./wareHouseComponent/bookInWareHouse";
 import { Link } from "react-router-dom";
 import RequireStaff from "../../../util/requireStaff";
+import RequireAdminAndStaff from "../../../util/requireAdminAndStaff";
 
-const WareHouseStaff: React.FC = () => {
+const WareHouseStaffAndAdmin: React.FC = () => {
     const token = localStorage.getItem("tokenLogin");
 
     const [books, setBooks] = useState<BookModel[] | undefined>([]);
@@ -92,5 +93,5 @@ const WareHouseStaff: React.FC = () => {
     );
 }
 
-const WareHouse = RequireStaff(WareHouseStaff);
+const WareHouse = RequireAdminAndStaff(WareHouseStaffAndAdmin);
 export default WareHouse;

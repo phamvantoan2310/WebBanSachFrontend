@@ -18,6 +18,7 @@ const Navbar: React.FC<navbarInterface> = (props) => {
   const [categorys, setCategorys] = useState<CategoryModel[] | undefined>([]);
   const [temporaryBookName, setTemporaryBookName] = useState<string>("");
   const [staffCondition, setStaffCondition] = useState<boolean>(false);
+  const [adminCondition, setAdminCondition] = useState<boolean>(false);
 
   const onSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTemporaryBookName(e.target.value);
@@ -47,11 +48,10 @@ const Navbar: React.FC<navbarInterface> = (props) => {
     if (token) {
       const decodeToken = jwtDecode(token) as JwtPayload;
       const isStaff = decodeToken.isStaff;
-      if (isStaff) {
-        setStaffCondition(true);
-      } else {
-        setStaffCondition(false);
-      }
+      const isAdmin = decodeToken.isAdmin;
+
+      setStaffCondition(isStaff);
+      setAdminCondition(isAdmin);
     }
   }, [navigate])
 
@@ -79,6 +79,9 @@ const Navbar: React.FC<navbarInterface> = (props) => {
                 {categorys?.map(category => (<li><NavLink className="dropdown-item" to={`/${category.categoryID}`} style={{ color: "blueviolet" }}>{category.categoryName} </NavLink></li>))}
               </ul>
             </li>
+            {adminCondition && <li className="nav-item">
+              <Link className="nav-link active" aria-current="page" to="/admin/revenue">Doanh thu</Link>
+            </li>}
           </ul>
         </div>
 
@@ -89,7 +92,7 @@ const Navbar: React.FC<navbarInterface> = (props) => {
         </div>
 
         {/* danh sách yêu thích */}
-        {!staffCondition &&
+        {!staffCondition && !adminCondition &&
           <ul className="navbar-nav me-2" style={{ paddingLeft: '10px' }}>
             <li className="nav-item" style={{ marginRight: "10px" }}>
               <NavLink to={"/user/wishList"} style={{ color: 'red' }}>
@@ -99,7 +102,7 @@ const Navbar: React.FC<navbarInterface> = (props) => {
           </ul>}
 
         {/* Biểu tượng giỏ hàng */}
-        {!staffCondition &&
+        {!staffCondition && !adminCondition &&
           <ul className="navbar-nav me-1">
             <li className="nav-item" style={{ marginRight: "15px" }}>
               <NavLink to={"/user/cart"}>
@@ -114,7 +117,7 @@ const Navbar: React.FC<navbarInterface> = (props) => {
           <ul className="navbar-nav me-1" style={{ paddingLeft: '10px' }}>
             <li className="nav-item" style={{ marginRight: "10px" }}>
               <NavLink to={"/staff/meeting"} >
-                <i className="fa fa-calendar" style={{color:"lightgray"}} aria-hidden="true"></i>
+                <i className="fa fa-calendar" style={{ color: "lightgray" }} aria-hidden="true"></i>
               </NavLink>
             </li>
           </ul>}
@@ -135,6 +138,36 @@ const Navbar: React.FC<navbarInterface> = (props) => {
             <li className="nav-item" style={{ marginRight: "15px" }}>
               <NavLink to={"/staff/report"} style={{ color: 'red' }}>
                 <i className="fa fa-info" style={{ color: "red" }} aria-hidden="true"></i>
+              </NavLink>
+            </li>
+          </ul>}
+
+        {/* Biểu tượng lịch họp */}
+        {adminCondition &&
+          <ul className="navbar-nav me-1" style={{ paddingLeft: '10px' }}>
+            <li className="nav-item" style={{ marginRight: "10px" }}>
+              <NavLink to={"/staff/meeting"} >
+                <i className="fa fa-calendar" style={{ color: "lightgray" }} aria-hidden="true"></i>
+              </NavLink>
+            </li>
+          </ul>}
+
+        {/* Biểu tượng kho */}
+        {adminCondition &&
+          <ul className="navbar-nav me-3" style={{ paddingLeft: '10px' }}>
+            <li className="nav-item" style={{ marginRight: "10px" }}>
+              <NavLink to={"/staff/warehouse"} >
+                <i className="fa fa-home" aria-hidden="true"></i>
+              </NavLink>
+            </li>
+          </ul>}
+
+        {/* Biểu tượng nhân viên*/}
+        {adminCondition &&
+          <ul className="navbar-nav me-1">
+            <li className="nav-item" style={{ marginRight: "15px" }}>
+              <NavLink to={"/admin/staff"} style={{ color: 'red' }}>
+                <i className="fa fa-users" style={{ color: "red" }} aria-hidden="true"></i>
               </NavLink>
             </li>
           </ul>}

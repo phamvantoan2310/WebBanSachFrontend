@@ -34,7 +34,8 @@ async function getBook(endpoint: string): Promise<getResult> {
             listed_price: responseData[key].listedPrice,
             number_of_book: responseData[key].numberOfBooks,
             point: responseData[key].point,
-            author_id: responseData[key].author_id
+            author_id: responseData[key].author_id,
+            quantity_sold: responseData[key].quantitySold
         });
     }
 
@@ -90,7 +91,8 @@ export async function getABook(bookID: number): Promise<BookModel | null> {
                 listed_price: responseData.listedPrice,
                 number_of_book: responseData.numberOfBooks,
                 point: responseData.point,
-                author_id: responseData.author_id
+                author_id: responseData.author_id,
+                quantity_sold: responseData.quantitySold
             }
         } else {
             throw new Error("book undefined");
@@ -164,7 +166,8 @@ export async function getBookByAuthorID(authorID: number) {
                 listed_price: item.listedPrice,
                 number_of_book: item.numberOfBooks,
                 point: item.point,
-                author_id: item.author_id
+                author_id: item.author_id,
+                quantity_sold: item.quantitySold
             });
         }
 
@@ -230,7 +233,8 @@ export async function staffGetAllBook(token: string) {
                 listed_price: responseData[key].listedPrice,
                 number_of_book: responseData[key].numberOfBooks,
                 point: responseData[key].point,
-                author_id: responseData[key].author_id
+                author_id: responseData[key].author_id,
+                quantity_sold: responseData[key].quantitySold
             });
         };
         return result;
@@ -263,7 +267,8 @@ export async function staffFindBook(token:string, bookName: string) {
                 listed_price: data[key].listedPrice,
                 number_of_book: data[key].numberOfBooks,
                 point: data[key].point,
-                author_id: data[key].author_id
+                author_id: data[key].author_id,
+                quantity_sold: data[key].quantitySold
             });
         };
         return books;

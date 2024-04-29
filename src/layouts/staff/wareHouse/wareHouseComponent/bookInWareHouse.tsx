@@ -119,6 +119,7 @@ const BookInWareHouse: React.FC<BookInWareHouseInterface> = (props) => {
             <div className="col-md-4">
                 <h5 className="text-start" style={{ color: "blueviolet" }}>{props.book.book_name}</h5>
                 <h6 className="text-start">Số lượng tồn: {number_of_book}</h6>
+                <h6 className="text-start">Đã bán: {props.book.quantity_sold}</h6>
                 <h6 className="text-start">Nhập thêm hàng: </h6>
                 <div className="d-flex align-items-center">
                     <button className="btn btn-outline-secondary me-2" onClick={decreasing}>-</button>

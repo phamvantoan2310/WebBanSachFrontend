@@ -50,21 +50,30 @@ const Register: React.FC = () => {
 
             try {
                 const endpoint = "http://localhost:8080/account/register";
+
+                const user = {
+                    userID: 0,
+                    userName: userName,
+                    password: password,
+                    email: email,
+                    phoneNumber: phonenumber,
+                    sex: (sex=='f'?0:1),
+                    address: address,
+                    avatar: fileToBase64,
+                };
+
+                const userResponse = {
+                    user : user,
+                    role : 3
+                }
+
+
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        userID: 0,
-                        userName: userName,
-                        password: password,
-                        email: email,
-                        phoneNumber: phonenumber,
-                        sex: (sex=='f'?0:1),
-                        address: address,
-                        avatar: fileToBase64,
-                    }),
+                    body: JSON.stringify(userResponse),
                 });
 
                 if (response.ok) {

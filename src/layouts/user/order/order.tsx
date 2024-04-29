@@ -14,7 +14,7 @@ const Order: React.FC = () => {
     const navigate = useNavigate();
 
 
-    const handleOrderDelete = (orderID: number) => {
+    const handleDeleteOrder = (orderID: number) => {
         if (token != null) {
             deleteOrder(orderID, token).then(
                 result => {
@@ -33,19 +33,41 @@ const Order: React.FC = () => {
         }
     }
 
+    const handleCancelOrder = (orderID: number) => {
+        if (token != null) {
+            const confirmCancelOrder = window.confirm("Xác nhận hủy đơn hàng?");
+            if (confirmCancelOrder) {
+                deleteOrder(orderID, token).then(
+                    result => {
+                        const updatedOrders = orders.filter(order => order.orderID !== orderID);
+                        setOrders(updatedOrders);
+                        alert("xóa thành công");
+                    }
+                ).catch(
+                    error => {
+                        console.log(error);
+                    }
+                )
+            }
+        } else {
+            navigate("/user/login");
+            return;
+        }
+    }
+
     const handleOrderComplete = (orderID: number) => {
-        if(token){
+        if (token) {
             completeOrder(token, orderID).then(
-                result=>{
+                result => {
                     alert("Cảm ơn đã xác nhận đơn hàng");
                     navigate("/account");
                 }
             ).catch(
-                error=>{
+                error => {
                     alert("Gặp lỗi trong quá trình hoàn thiện đơn hàng");
                 }
             )
-        }else{
+        } else {
             navigate("/user/login");
             return;
         }
@@ -79,7 +101,10 @@ const Order: React.FC = () => {
                             <button className="btn btn-success w-25 mt-5" style={{ marginLeft: "370px" }} onClick={() => handleOrderComplete(order.orderID)}>Đã nhận được sách</button>
                         </div>)}
                         {(order.orderStatus == "Hoàn Thành") && (<div>
-                            <button className="btn btn-danger w-25 mt-5" style={{ marginLeft: "370px" }} onClick={() => { handleOrderDelete(order.orderID) }}>Xóa</button>
+                            <button className="btn btn-danger w-25 mt-5" style={{ marginLeft: "370px" }} onClick={() => { handleDeleteOrder(order.orderID) }}>Xóa</button>
+                        </div>)}
+                        {(order.orderStatus == "Đang Chờ Xác Nhận") && (<div>
+                            <button className="btn btn-danger w-25 mt-5" style={{ marginLeft: "370px" }} onClick={() => { handleCancelOrder(order.orderID) }}>Hủy đơn hàng</button>
                         </div>)}
                     </div>
                     <OrderItem order={order} />

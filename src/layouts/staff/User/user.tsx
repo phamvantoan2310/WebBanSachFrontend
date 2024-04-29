@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import UserModel from "../../../models/UserModel";
-import { deleteUser, getUserByRoleID, getUserByUserNameContaining } from "../../../api/userApi";
+import { deleteUser, getUserByRoleID, getUserByUserNameContainingAndRoleID } from "../../../api/userApi";
 import { Link } from "react-router-dom";
 
 const User: React.FC = () => {
@@ -30,7 +30,7 @@ const User: React.FC = () => {
     const handleSearch = () => {
         if (token) {
             if (userName != "") {
-                getUserByUserNameContaining(token, userName).then(
+                getUserByUserNameContainingAndRoleID(token, userName, 3).then(
                     result => {
                         setUsers(result);
                     }

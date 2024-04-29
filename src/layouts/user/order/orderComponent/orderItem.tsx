@@ -126,6 +126,7 @@ const OrderItem: React.FC<OrderItemInterface> = (props) => {
             <div className="container mt-1" >
                 {evaluationCondition && (     // evaluation
                 <div className="fixed-top" style={{ top: "350px", left: "550px", right: "500px", borderRadius: "10px", backgroundColor: "white" }}>
+                    <button className="btn" style={{marginLeft:"380px"}} onClick={()=>setEvaluationCondition(false)}>x</button>
                     <h3>Đánh giá sản phẩm</h3>
                     {stars}
                     <input className="form-control w-75 m-3 " placeholder="đánh giá" onChange={(e)=>setEvaluate(e.target.value)}></input>

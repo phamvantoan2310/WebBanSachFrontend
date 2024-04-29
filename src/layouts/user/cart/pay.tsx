@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CartModel from "../../../models/CartModel";
 import CartItemModel from "../../../models/CartItemModel";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { buyNow, getCart, getCartItem } from "../../../api/cartApi";
+import { buyNow, buyOneBook, getCart, getCartItem } from "../../../api/cartApi";
 import BookInCartITem from "./cartComponent/bookInCartItem";
 import Format from "../../../util/ToLocaleString";
 import BookInPay from "./payComponent/bookInPay";
@@ -207,16 +207,28 @@ const Pay: React.FC = () => {
             navigate("/user/login");
             return;
         } else if (cart) {
-            buyNow(deliveryTypeID, paymentID, token).then(
-                result => {
-                    console.log(deliveryTypeID, paymentID);
-                    alert("Mua thành công, vui lòng chờ duyệt đơn hàng");
-                }
-            ).catch(
-                error => {
-                    alert("Quá trình mua gặp lỗi, vui lòng thử lại");
-                }
-            );
+            if (cartItemCondition) {
+                buyNow(deliveryTypeID, paymentID, token).then(
+                    result => {
+                        console.log(deliveryTypeID, paymentID);
+                        alert("Mua thành công, vui lòng chờ duyệt đơn hàng");
+                    }
+                ).catch(
+                    error => {
+                        alert("Quá trình mua gặp lỗi, vui lòng thử lại");
+                    }
+                );
+            }else if(bookIDOk && NumberOfBook){
+                buyOneBook(deliveryTypeID, paymentID, token, parseInt(bookIDOk), parseInt(NumberOfBook)).then(
+                    result=>{
+                        alert("Mua sách thành công");
+                    }
+                ).catch(
+                    error=>{
+                        alert("Quá trình mua gặp lỗi, vui lòng thử lại");
+                    }
+                )
+            }
         }
     }
 
@@ -250,7 +262,7 @@ const Pay: React.FC = () => {
                 headers: {
                     token: tokenStripe.id,
                     amount: totalPrice + "",
-                    Authorization : `Bearer ${token}`
+                    Authorization: `Bearer ${token}`
                 }
             }).then(() => {
                 setStripeCondition(false);
@@ -341,9 +353,9 @@ const Pay: React.FC = () => {
                     <hr />
                     <h4 className="text-start" style={{ paddingTop: "60px" }}>Tổng:</h4>
                     <h3 className="text-end" style={{ color: "orange", paddingBottom: "40px" }}>{Format(totalPrice)} đ</h3>
-                    {!stripeCondition && <button type="button" className="btn btn-danger w-50 mb-5" onClick={paymentID==1?handleBuyNow:()=>setStripeCondition(true)}>Mua ngay</button>}
+                    {!stripeCondition && <button type="button" className="btn btn-danger w-50 mb-5" onClick={paymentID == 1 ? handleBuyNow : () => setStripeCondition(true)}>Mua ngay</button>}
                     {stripeCondition && <Stripe stripeKey="pk_test_51Oyy9G08IedeBdvZREyX6FZsHUEClaKK89nvZNm9g9LPqNfqPoAP2etIcXBW3roGjfzQNdBLm0dYH4VWcmI7sZ2L00HpZPfcD0" token={handleToken} />}
-                    {stripeCondition && <button type="button" className="btn btn-danger" style={{marginLeft:"50px"}} onClick={() => setStripeCondition(false)}>Đổi phương thức thanh toán</button>}
+                    {stripeCondition && <button type="button" className="btn btn-danger" style={{ marginLeft: "50px" }} onClick={() => setStripeCondition(false)}>Đổi phương thức thanh toán</button>}
                 </div>
             </div>
         </div>

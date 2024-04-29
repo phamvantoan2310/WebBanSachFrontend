@@ -26,6 +26,7 @@ const Account: React.FC = () => {
     const [address, setAddress] = useState('');
 
     const [staffCondition, setStaffCondition] = useState<boolean>(false);     //role stafff
+    const [adminCondition, setAdminCondition] = useState<boolean>(false);     //role admin
     
 
     useEffect(() => {
@@ -33,6 +34,9 @@ const Account: React.FC = () => {
             const dataToken = jwtDecode(token) as JwtPayload;
             if (dataToken.isStaff) {
                 setStaffCondition(true);
+            }
+            if(dataToken.isAdmin){
+                setAdminCondition(true);
             }
         } else {
             navigate("/user/login");
@@ -134,7 +138,7 @@ const Account: React.FC = () => {
                     alt={user?.user_name}
                     style={{ height: '300px', width: '200px', borderRadius: "300px", marginTop: "40px" }}
                 />
-                <h4 style={{ color: "white" }}>{user?.user_name}</h4>
+                <h4 style={{ color: "white" }}>{adminCondition && "ADMIN: "} {user?.user_name}</h4>
                 <div className="row">
                     <h5 className="text-start col-md-2">Số điện thoại: </h5>
                     <h5 className="text-start col-md-6" style={{ color: "white", paddingRight: "700px" }}> {user?.phone_number}</h5>
@@ -170,7 +174,7 @@ const Account: React.FC = () => {
                     </div>
                 </div>
                 <hr style={{ color: "white" }} />
-                {!staffCondition && <div>
+                {!staffCondition && !adminCondition && <div>
                     <h3 className="text-start">Đơn hàng</h3>
                     <div className="row">
                         <div className="col-md-6">

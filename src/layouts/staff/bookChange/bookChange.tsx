@@ -9,7 +9,8 @@ import Format from "../../../util/ToLocaleString";
 import AuthorModel from "../../../models/AuthorModel";
 import { getAuthor, getAuthorByContainingAuthorName } from "../../../api/authorApi";
 import RequireStaff from "../../../util/requireStaff";
-const BookChangeStaff: React.FC = () => {
+import RequireAdminAndStaff from "../../../util/requireAdminAndStaff";
+const BookChangeStaffAndAdmin: React.FC = () => {
     const token = localStorage.getItem("tokenLogin")
     const navigate = useNavigate();
     const { bookID } = useParams();
@@ -305,5 +306,5 @@ const BookChangeStaff: React.FC = () => {
     );
 }
 
-const BookChange = RequireStaff(BookChangeStaff);
+const BookChange = RequireAdminAndStaff(BookChangeStaffAndAdmin);
 export default BookChange; 

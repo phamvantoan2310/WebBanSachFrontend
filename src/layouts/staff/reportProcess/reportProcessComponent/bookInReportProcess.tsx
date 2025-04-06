@@ -79,11 +79,9 @@ const BookInReportProcess: React.FC<BookInReportProcessInterface> = (props) => {
                         style={{ height: '150px', width: '100px' }}
                     />
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-8">
                     <h5 className="text-start" style={{color:"blue"}}>{book?.book_name}</h5>
                     <p className="text-start">Giá: {Format(book?.price)} đ</p>
-                </div>
-                <div className="col-md-4 pt-5 mt-2">
                 </div>
             </div>
         </div>

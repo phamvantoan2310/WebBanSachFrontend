@@ -50,14 +50,15 @@ const Evaluate: React.FC<EvaluateInterface> = (props) => {
 
     return (
         <div className="container">
+            <div className="overflow-auto" style={{height: "400px",maxWidth:"1300px"}}>
             {
                 evaluates.map((danhgia, index) => (
                     <div className="row mt-4 mb-4" key={index}>
-                        <div className="col-4">
+                        <div className="col-8">
                             <UserEvaluate key={danhgia.evaluate_id} evaluateID={danhgia.evaluate_id} />
                         </div>
 
-                        <div className="col-8 text-start">
+                        <div className="col-4 text-start">
                             <p>Đánh giá: {danhgia.decription} </p>
                             <p>Xếp hạng: {RenderRating(danhgia.point?danhgia.point:0)} </p>
                         </div>
@@ -65,6 +66,7 @@ const Evaluate: React.FC<EvaluateInterface> = (props) => {
                     </div>
                 ))
             }
+            </div>
         </div>
     );
 }

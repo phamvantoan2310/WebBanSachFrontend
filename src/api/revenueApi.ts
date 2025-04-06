@@ -1,29 +1,38 @@
-import { json } from "stream/consumers";
+import OrderModel from "../models/OrderModel";
 
 export async function getRevenueByRevenueDate(token: string, revenueDate: string) {
-    const endpoint = `http://localhost:8080/admin/getrevenuebyrevenuedate?revenueDate=${revenueDate}`;
+    const orders: OrderModel[] = [];
+    const endpoint = `http://localhost:8080/orders/search/findByOrderDateAndOrderStatus?orderDate=${revenueDate}&orderStatus=Hoàn Thành`;
     try {
         const response = await fetch(endpoint, {
-            method : 'GET',
-            headers : {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api getRevenueByRevenueDate");
         }
 
         const responseData = await response.json();
+        const data = await responseData._embedded.orderses;
 
-        return({
-            revenueID : responseData.revenueID,
-            totalRevenue : responseData.totalRevenue,
-            revenueDate : responseData.revenueDate
-        });
+        for (const key in data) {                //nhập sách vào dãy
+            orders.push({
+                orderID: data[key].orderID,
+                deliveryAddress: data[key].deliveryAddress,
+                deliveryDate: data[key].deliveryDate,
+                orderDate: data[key].orderDate,
+                orderStatus: data[key].orderStatus,
+                totalPrice: data[key].totalPrice,
+                deliveryPhoneNumber: data[key].deliveryPhoneNumber,
+                deliveryUserName: data[key].deliveryUserName,
+            });
+        };
 
-
+        return orders;
     } catch (error) {
         console.log(error);
     }

@@ -17,7 +17,7 @@ const BookInWareHouse: React.FC<BookInWareHouseInterface> = (props) => {
     const [images, setImages] = useState<ImageModel[]>([]);
     const [NumberOfBook, setNumberOfBook] = useState(0);
 
-    const [number_of_book, setNumber_Of_Book] = useState<number|undefined>(props.book.number_of_book);
+    const [number_of_book, setNumber_Of_Book] = useState<number | undefined>(props.book.number_of_book);
 
 
 
@@ -53,35 +53,48 @@ const BookInWareHouse: React.FC<BookInWareHouseInterface> = (props) => {
         setNumberOfBook(newNumberOfBook);
     }
 
-    const handleChange = () =>{
-        if(token){
+    const handleChange = () => {
+        if (token) {
             changeNumberOfBook(token, NumberOfBook, props.book.book_id).then(
-                result=>{
+                result => {
                     alert("Thay đổi thành công");
-                    if(number_of_book){
+                    if (number_of_book) {
                         setNumber_Of_Book(number_of_book + NumberOfBook);
                     }
                 }
             ).catch(
-                error=>{
+                error => {
                     console.log(error);
                 }
             )
         }
     }
 
-    const handleDeleteBook = () =>{
-        if(token){
-            deleteBook(token, props.book.book_id).then(
-                result=>{
-                    alert("xóa thành công");
-                    navigate("/staff/warehouse");
-                }
-            ).catch(
-                error=>{
-                    console.log(error);
-                }
-            )
+    // ********************************
+    const handleDeleteBook = async() => {
+        const confirmDelete = window.confirm("Xác nhận xóa sách?");
+        if (confirmDelete) {
+            if (token) {
+                await deleteBook(token, props.book.book_id).then(
+                    result => {
+                        console.log(result);
+                    }
+                ).catch(
+                    error => {
+                        console.log(error);
+                    }
+                )
+                await deleteBook(token, props.book.book_id).then(
+                    result => {
+                        alert("xóa thành công");
+                        navigate(0);
+                    }
+                ).catch(
+                    error => {
+                        console.log(error);
+                    }
+                )
+            }
         }
     }
 
@@ -107,7 +120,7 @@ const BookInWareHouse: React.FC<BookInWareHouseInterface> = (props) => {
     }
 
     return (
-        <div className="row pt-5 mt-5 pb-5" style={{ backgroundColor: "white", borderRadius: "10px", border:"1px solid burlywood" }}>
+        <div className="row pt-5 pb-5" style={{ backgroundColor: "white", borderRadius: "10px", border: "1px solid #060270" }}>
             <div className="col-md-4">
                 <img
                     src={"data:image/png;base64," + dulieuanh}
@@ -117,6 +130,7 @@ const BookInWareHouse: React.FC<BookInWareHouseInterface> = (props) => {
                 />
             </div>
             <div className="col-md-4">
+                <h6 className="text-start" style={{ color: " #AAAAAA" }}>Mã sách: {props.book.book_id}</h6>
                 <h5 className="text-start" style={{ color: "blueviolet" }}>{props.book.book_name}</h5>
                 <h6 className="text-start">Số lượng tồn: {number_of_book}</h6>
                 <h6 className="text-start">Đã bán: {props.book.quantity_sold}</h6>
@@ -128,8 +142,8 @@ const BookInWareHouse: React.FC<BookInWareHouseInterface> = (props) => {
                 </div>
             </div>
             <div className="col-md-4">
-                <button className="btn btn-success" style={{ marginLeft: "200px", width:"150px" }} onClick={handleChange}>Lưu thay đổi</button>
-                <button className="btn btn-danger mt-5" style={{ marginLeft: "200px", width:"150px" }} onClick={handleDeleteBook}>Xóa</button>
+                <button className="btn btn-success" style={{ marginLeft: "200px", width: "150px" }} onClick={handleChange}>Lưu thay đổi</button>
+                <button className="btn btn-danger mt-5" style={{ marginLeft: "200px", width: "150px" }} onClick={handleDeleteBook}>Xóa</button>
             </div>
         </div>
     );

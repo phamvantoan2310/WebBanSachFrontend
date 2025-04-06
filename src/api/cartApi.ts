@@ -3,6 +3,7 @@ import CartModel from "../models/CartModel";
 import { jwtDecode } from "jwt-decode";
 import CartItemModel from "../models/CartItemModel";
 import { Console } from "console";
+import BookModel from "../models/BookModel";
 
 export async function getCart(token: string) {
     try {
@@ -142,18 +143,44 @@ export async function addCartItem(bookID: number, numberOfBook: number, token: s
     }
 }
 
-export async function deleteCartItem(cartItemID:number, token: string) {
+export async function updateNumberOfCartItem(cartItemID: number, numberOfBook: number, token: string) {
+    try {
+        const updateNumberOfCartItemResponse = {
+            cartItemID: cartItemID,
+            numberOfBook: numberOfBook
+        }
+        const endpoint = "http://localhost:8080/user/updateNumberOfCartItem";
+
+        const response = await fetch(endpoint, {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updateNumberOfCartItemResponse)
+        });
+
+        if (!response.ok) {
+            throw new Error("fail call api updateNumberOfCartItem!");
+        }
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function deleteCartItem(cartItemID: number, token: string) {
     try {
         const endpoint = "http://localhost:8080/user/deleteCartItem";
         const response = await fetch(endpoint, {
-            method: 'POST',
+            method: 'DELETE',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(cartItemID)
         });
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api deleteCartItem");
         }
         return response;
@@ -166,15 +193,15 @@ export async function deleteAllCartItem(cartID: number, token: string) {
     try {
         const endpoint = "http://localhost:8080/user/deleteAllCartItem";
         const response = await fetch(endpoint, {
-            method: 'POST',
+            method: 'DELETE',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(cartID)
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("Xóa thất bại");
         }
 
@@ -184,23 +211,34 @@ export async function deleteAllCartItem(cartID: number, token: string) {
     }
 }
 
-export async function buyNow(deliveryTypeID: number,paymentID: number, token: string) {
+
+
+export async function buyNow(deliveryTypeID: number, paymentID: number, token: string, deliveryAddress: string, deliveryPhoneNumber: string, deliveryUserName: string, selectedBooks: { book: BookModel; numberOfBook: number }[]) {
     const createOrderRequest = {
         deliveryTypeID: deliveryTypeID,
         paymentID: paymentID,
-        bookID : 0
+        bookID: 0,
+        numberOfBook: 0,
+        deliveryAddress: deliveryAddress,
+        deliveryPhoneNumber: deliveryPhoneNumber,
+        deliveryUserName: deliveryUserName,
+        selectedBooksResponse: selectedBooks.map(item => ({
+            bookID: item.book.book_id,
+            numberOfBooks: item.numberOfBook
+        }))
     }
+    console.log(createOrderRequest);
     try {
         const endpoint = "http://localhost:8080/user/buynow";
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(createOrderRequest),
         });
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api buyNow");
         }
         return response;
@@ -209,24 +247,27 @@ export async function buyNow(deliveryTypeID: number,paymentID: number, token: st
     }
 }
 
-export async function buyOneBook(deliveryTypeID: number,paymentID: number, token: string, bookID: number, numberOfBook : number) {
+export async function buyOneBook(deliveryTypeID: number, paymentID: number, token: string, bookID: number, numberOfBook: number, deliveryAddress: string , deliveryPhoneNumber: string, deliveryUserName: string) {
     const createOrderRequest = {
         deliveryTypeID: deliveryTypeID,
         paymentID: paymentID,
-        bookID : bookID,
-        numberOfBook : numberOfBook
+        bookID: bookID,
+        numberOfBook: numberOfBook,
+        deliveryAddress: deliveryAddress,
+        deliveryPhoneNumber: deliveryPhoneNumber,
+        deliveryUserName: deliveryUserName,
     }
     try {
         const endpoint = "http://localhost:8080/user/buynow";
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(createOrderRequest),
         });
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api buyNow");
         }
         return response;

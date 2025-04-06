@@ -28,7 +28,9 @@ export async function getOrderByUserID(userID: number, token: string) {
                 totalPrice: data[key].totalPrice,
                 deliveryAddress: data[key].deliveryAddress,
                 deliveryDate: data[key].deliveryDate,
-                orderStatus: data[key].orderStatus
+                orderStatus: data[key].orderStatus,
+                deliveryPhoneNumber: data[key].deliveryPhoneNumber,
+                deliveryUserName: data[key].deliveryUserName,
             })
         }
 
@@ -72,7 +74,7 @@ export async function deleteOrder(orderID: number, token: string) {
     try {
         const endpoint = `http://localhost:8080/user/deleteorder`;
         const response = await fetch(endpoint, {
-            method: 'POST',
+            method: 'DELETE',
             headers: {
                 'Content-type': 'application/json',
                 'Authorization': `Bearer ${token}`
@@ -106,7 +108,9 @@ export async function getOrderByReportID(token: string, reportID: number) {
                 totalPrice: responseData.totalPrice,
                 deliveryAddress: responseData.deliveryAddress,
                 deliveryDate: responseData.deliveryDate,
-                orderStatus: responseData.orderStatus
+                orderStatus: responseData.orderStatus,
+                deliveryPhoneNumber: responseData.deliveryPhoneNumber,
+                deliveryUserName: responseData.deliveryUserName,
             });
         } else {
             throw new Error("order undefined");
@@ -121,7 +125,7 @@ export async function completeOrder(token: string, orderID: number) {
     const endpoint = "http://localhost:8080/user/completeorder";
     try {
         const response = await fetch(endpoint, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
@@ -160,7 +164,9 @@ export async function getOrderByOrderStatus(token: string, orderStatus: string) 
                 deliveryAddress: order.deliveryAddress,
                 deliveryDate: order.deliveryDate,
                 orderStatus: order.orderStatus,
-                totalPrice: order.totalPrice
+                totalPrice: order.totalPrice,
+                deliveryPhoneNumber: order.deliveryPhoneNumber,
+                deliveryUserName: order.deliveryUserName,
             });
         }
 
@@ -192,7 +198,9 @@ export async function getOrderByOrderID(orderID: number, token: string) {
             totalPrice: responseData.totalPrice,
             deliveryAddress: responseData.deliveryAddress,
             deliveryDate: responseData.deliveryDate,
-            orderStatus: responseData.orderStatus
+            orderStatus: responseData.orderStatus,
+            deliveryPhoneNumber: responseData.deliveryPhoneNumber,
+            deliveryUserName: responseData.deliveryUserName,
         });
 
     } catch (error) {
@@ -204,7 +212,7 @@ export async function confirmOrder(token: string, orderID: number) {
     const endpoint = "http://localhost:8080/staff/confirmorder";
     try {
         const response = await fetch(endpoint, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-type': 'application/json',
                 'Authorization': `Bearer ${token}`
@@ -244,10 +252,37 @@ export async function getOrderByDeliveryOrder(token: string, deliveryOrder: stri
                 totalPrice: orderData.totalPrice,
                 deliveryAddress: orderData.deliveryAddress,
                 deliveryDate: orderData.deliveryDate,
-                orderStatus: orderData.orderStatus
+                orderStatus: orderData.orderStatus,
+                deliveryPhoneNumber: orderData.deliveryPhoneNumber,
+                deliveryUserName: orderData.deliveryPhoneNumber
             })
         }
         return orders;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function updateOrderAddress(token: string, orderID: number, orderAddress: string) {
+    const endpoint = "http://localhost:8080/user/updateorderaddress";
+    const updateOrderAddressResponse = {
+        orderID : orderID,
+        orderAddress: orderAddress
+    }
+    try {
+        const response = await fetch(endpoint, {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updateOrderAddressResponse)
+        });
+
+        if (!response.ok) {
+            throw new Error("fail call api updateOrder");
+        }
+        return response;
     } catch (error) {
         console.log(error);
     }

@@ -5,16 +5,14 @@ import Footer from './layouts/footer/Footer';
 import HomePage from './layouts/homePage/homePage';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import BookDetail from './layouts/product/bookDetail';
-import Register from './layouts/user/register';
-import Activate from './layouts/user/activate';
+import Register from './layouts/account/register';
+import Activate from './layouts/account/activate';
 import Login from './layouts/account/login';
 import WishListItem from './layouts/user/wishList/wishListItem';
 import BookInWishList from './layouts/user/wishList/bookInWishList';
 import Cart from './layouts/user/cart/cart';
 import Pay from './layouts/user/cart/pay';
 import Account from './layouts/account/account';
-import Order from './layouts/user/order/order';
-import Author from './layouts/user/author/Author';
 import BookChange from './layouts/staff/bookChange/bookChange';
 import WareHouse from './layouts/staff/wareHouse/wareHouse';
 import AddBook_AdminStaff from './layouts/admin/addBook';
@@ -23,11 +21,16 @@ import Report from './layouts/staff/reportProcess/report';
 import ConfirmOrder from './layouts/staff/confirmOrder/confirmOrder';
 import OrderDetail from './layouts/staff/confirmOrder/confirmOrderComponent/orderDetail';
 import SendReport from './layouts/user/report/sendReport';
-import User from './layouts/staff/User/user';
 import UserDetail from './layouts/staff/User/userComponent/userDetail';
-import Meeting from './layouts/staff/meeting/meeting';
 import Revenue from './layouts/admin/revenue/revenue';
 import Staff from './layouts/admin/staff/Staff';
+import Bill from './layouts/admin/bill/bill';
+import BillDetail from './layouts/admin/bill/billDetail';
+import AuthorDetail from './layouts/user/author/Authordetail';
+import Author from './layouts/admin/author/author';
+import ChangePasswordWhenForgot from './layouts/account/changePasswordWhenForgot';
+import Category from './layouts/admin/category/category';
+import About from './layouts/footer/About';
 
 
 function App() {
@@ -52,8 +55,7 @@ function App() {
           <Route path='/user/pay' element={<Pay />}/>   {/*cart */}
           <Route path='/user/pay/:bookIDOk/:NumberOfBook' element={<Pay />}/> {/*bookDetail */}
           <Route path='/account' element={<Account />}/> {/*navbar */}
-          <Route path='/user/order' element={<Order />}/> {/*Account */}
-          <Route path='/user/author/:authorID' element={<Author />}/>
+          <Route path='/user/author/:authorID' element={<AuthorDetail />}/>
           <Route path='/user/report/:orderID' element={<SendReport />}/>
           <Route path='/staff/changebookinformation/:bookID' element={<BookChange />}/>
           <Route path='/staff/warehouse' element={<WareHouse />}/>
@@ -61,11 +63,15 @@ function App() {
           <Route path='/staff/reportprocess/:reportID' element={<ReportProcess />}/>
           <Route path='/staff/confirmorder' element={<ConfirmOrder />}/>
           <Route path='/staff/orderdetail/:orderID' element={<OrderDetail />}/>
-          <Route path='/staff/user' element={<User />}/>
           <Route path='/staff/user/:userID' element={<UserDetail />}/>
-          <Route path='/staff/meeting' element={<Meeting />}/>
+          <Route path='/admin/bill' element={<Bill />}/>
+          <Route path='/admin/billdetail/:billID' element={<BillDetail />}/>
           <Route path='/admin/revenue' element={<Revenue />}/>
           <Route path='/admin/staff' element={<Staff />}/>
+          <Route path='/admin/author' element={<Author />}/>
+          <Route path='/account/changepasswordwhenforgot/:email' element={<ChangePasswordWhenForgot />}/>
+          <Route path='/admin/category' element={<Category />}/>
+          <Route path='/about' element={<About />}/>
         </Routes>
         <Footer />
       </BrowserRouter>

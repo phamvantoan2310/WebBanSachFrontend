@@ -7,6 +7,7 @@ import Format from "../../../../util/ToLocaleString";
 import RenderRating from "../../../../util/RenderRating";
 import WishList from "../../../../models/WishList";
 import { getWishList } from "../../../../api/wishListApi";
+import { Button, Modal, Space, Typography } from "antd";
 
 interface bookPropInterface {
     book: BookModel;
@@ -16,7 +17,6 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
     const [images, setImages] = useState<ImageModel[]>([]);
     const [dataload, setdataload] = useState<boolean>(true);
     const [error, seterror] = useState(null);
-    const [isHovered, setIsHovered] = useState(false);
     const token = localStorage.getItem("tokenLogin");
     const [wishListCondition, setWishListCondition] = useState(false);
     const [wishLists, setWishLists] = useState<WishList[]>([]);
@@ -78,7 +78,7 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
 
         try {
             const response = await fetch(endpoint, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -113,13 +113,26 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
                     />
                 </Link>
                 {wishListCondition && (     // WishList
-                    <div className="fixed-top" style={{ top: "350px", left: "650px", right: "600px", borderRadius: "10px", backgroundColor: "gray" }}>
-                        <h3 style={{ color: "whitesmoke" }}>Chọn danh sách yêu thích</h3>
-                        {wishLists.map((wishlist) => (
-                            <button className="btn btn-success mb-2" style={{ width: "200px", paddingLeft: "20px" }} key={wishlist.wishList_id} onClick={() => handleAddBookToWishList(wishlist.wishList_id)}>{wishlist.wishList_name}</button>
-                        ))}
-                        <button className="btn btn-danger" onClick={() => setWishListCondition(false)}>Đóng</button>
-                    </div>)}
+                    <Modal
+                        title={<Typography.Title level={3} style={{ color: '#1890ff' }}>Chọn danh sách yêu thích</Typography.Title>}
+                        open={wishListCondition}
+                        onCancel={() => setWishListCondition(false)}
+                        footer={null}
+                        centered
+                    >
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            {wishLists.map((wishlist) => (
+                                <Button
+                                    key={wishlist.wishList_id}
+                                    type="primary"
+                                    block
+                                    onClick={() => handleAddBookToWishList(wishlist.wishList_id)}
+                                >
+                                    {wishlist.wishList_name}
+                                </Button>
+                            ))}
+                        </Space>
+                    </Modal>)}
                 <div className="card-body">
                     <Link to={`/book/${book.book_id}`} style={{ textDecoration: 'none' }}>
                         <h5 className="card-title">{book.book_name}</h5>
@@ -135,12 +148,12 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
                     </div>
                     <div className="row mt-2" role="group">
                         <div className="col-6">
-                            <button className="btn btn-secondary btn-block" onClick={() => { handleGetWishList(); setWishListCondition(true) }}>
+                            <button className="btn btn-secondary btn-block" title="Danh sách yêu thích!" onClick={() => { handleGetWishList(); setWishListCondition(true) }}>
                                 <i className="fa fa-heart"></i>
                             </button>
                         </div>
                         <div className="col-6">
-                            <button className="btn btn-danger btn-block">
+                            <button className="btn btn-danger btn-block" title="Giỏ hàng">
                                 <Link to={`/book/${book.book_id}`} style={{ color: "white" }}>
                                     <i className="fas fa-shopping-cart"></i>
                                 </Link>

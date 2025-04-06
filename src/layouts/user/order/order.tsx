@@ -4,8 +4,7 @@ import OrderModel from "../../../models/OrderModel";
 import OrderItem from "./orderComponent/orderItem";
 import Format from "../../../util/ToLocaleString";
 import { completeOrder, deleteOrder } from "../../../api/orderApi";
-import { error } from "console";
-import { Star, StarFill } from "react-bootstrap-icons";
+
 
 const Order: React.FC = () => {
     let { state } = useLocation();

@@ -79,16 +79,24 @@ const WareHouseStaffAndAdmin: React.FC = () => {
 
     return (
         <div className="container pt-5">
-            <h1 className="text-start pt-5">Kho</h1>
+            <h1 className="text-start pt-5">Kho ({books?.length} sản phẩm)</h1>
             <Link to={"/admin/addbook"}>
                 <button className="btn btn-primary" style={{ marginLeft: "1150px", width: "150px" }}>Thêm sản phẩm</button>
             </Link>
             <hr />
-            <div className="d-flex pt-5">
-                <input className="form-control me-2" type="search" placeholder="Tìm kiếm sách" aria-label="Search" onChange={(e) => setBookName(e.target.value)} value={bookName} />
+            <div className="d-flex pt-3">
+                <input className="form-control me-2" type="search" placeholder="Tìm kiếm sách" aria-label="Search" style={{width:"500px", marginLeft:"699px"}} onChange={(e) => setBookName(e.target.value)} value={bookName}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleStaffSearchBook();
+                        }
+                    }}
+                />
                 <button className="btn btn-outline-success" type="button" onClick={handleStaffSearchBook}>Tìm kiếm</button>
             </div>
-            {books?.map((book) => <BookInWareHouse key={book.book_id} book={book} />)}
+            <div className="overflow-auto mt-3" style={{ height: "800px" }}>
+                {books?.map((book) => <BookInWareHouse key={book.book_id} book={book} />)}
+            </div>
         </div>
     );
 }

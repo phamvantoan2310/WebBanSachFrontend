@@ -55,7 +55,7 @@ const ImageBookDetail: React.FC<ImageBookDetailInterface> = (props) => {
     let images: ImageModel[] = [];
     
     return (
-        <div className="row">
+        <div className="row card-body" style={{backgroundColor:" white",border:"1px solid #d6c2c2", borderRadius:"5px", padding:"10px"}}>
             <div>
                 {(selectedImage) && <img src={"data:image/png;base64,"+selectedImage.data} style={{height:"500px", marginBottom:"10px", width:'300px'}}/>}
             </div>

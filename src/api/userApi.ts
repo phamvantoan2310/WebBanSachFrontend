@@ -100,9 +100,10 @@ export async function getAUser(token: string): Promise<UserModel | null> {
                 phone_number: responseData.phoneNumber,
                 sex: responseData.sex,
                 avatar: responseData.avatar,
+                account_status: responseData.accountStatus,
             }
         } else {
-            throw new Error("user andefined");
+            throw new Error("user undefined");
         }
     } catch (error) {
         console.error("ERROR: " + error);
@@ -387,8 +388,8 @@ export async function createUser(token: string, userName: string, password: stri
         };
 
         const userResponse = {
-            user : user,
-            role : 2
+            user: user,
+            role: 2
         }
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -399,7 +400,7 @@ export async function createUser(token: string, userName: string, password: stri
             body: JSON.stringify(userResponse)
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api createUser");
         }
 
@@ -409,4 +410,5 @@ export async function createUser(token: string, userName: string, password: stri
     }
 
 }
+
 

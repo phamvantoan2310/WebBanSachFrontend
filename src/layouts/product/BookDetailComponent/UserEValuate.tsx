@@ -50,7 +50,7 @@ const UserEvaluate: React.FC<UserEvaluateInterface> = (Props) => {
                 <img src={"data:image/png;base64," + user?.avatar} style={{ width: '50px' }} />
             </div>
             <div className="col-md-3">
-                <h3>{user?.user_name}</h3>
+                <h3 style={{width:"200px", color:"GrayText"}}>{user?.user_name}</h3>
             </div>
         </div>
     );

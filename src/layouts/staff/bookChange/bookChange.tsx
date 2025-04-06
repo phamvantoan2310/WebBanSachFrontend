@@ -10,6 +10,8 @@ import AuthorModel from "../../../models/AuthorModel";
 import { getAuthor, getAuthorByContainingAuthorName } from "../../../api/authorApi";
 import RequireStaff from "../../../util/requireStaff";
 import RequireAdminAndStaff from "../../../util/requireAdminAndStaff";
+import CategoryModel from "../../../models/CategoryModel";
+import { getAllCategory, getCategoryByBookID } from "../../../api/categoryApi";
 const BookChangeStaffAndAdmin: React.FC = () => {
     const token = localStorage.getItem("tokenLogin")
     const navigate = useNavigate();
@@ -31,8 +33,36 @@ const BookChangeStaffAndAdmin: React.FC = () => {
     const [images, setImages] = useState<ImageModel[]>([]);
     const [author, setAuthor] = useState<AuthorModel | null>(null);
     const [selectedImage, setSelectedImage] = useState<ImageModel | null>(null);
+    const [allCategorys, setAllCategorys] = useState<CategoryModel[] | undefined>([]);
+    const [categorys, setCategorys] = useState<CategoryModel[] | null>();
     const [dataload, setDataload] = useState<boolean>(true);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        getAllCategory().then(
+            result => {
+                setAllCategorys(result);
+            }
+        ).catch(
+            error => {
+                console.log(error);
+            }
+        )
+    }, [])
+
+    useEffect(() => {
+        getCategoryByBookID(bookIDOk).then(
+            result => {
+                setCategorys(result);
+            }
+        ).catch(
+            error => {
+                console.log(error);
+            }
+        )
+    }, [])
+
+
 
     useEffect(() => {
         if (token) {
@@ -50,19 +80,19 @@ const BookChangeStaffAndAdmin: React.FC = () => {
         }
     }, [bookIDOk])
 
-    useEffect(()=>{
-        if(bookIDOk){
+    useEffect(() => {
+        if (bookIDOk) {
             getAuthor(bookIDOk).then(
-                result=>{
+                result => {
                     setAuthor(result);
                 }
             ).catch(
-                error=>{
+                error => {
                     console.log(error);
                 }
             )
         }
-    },[bookIDOk])
+    }, [bookIDOk])
 
     useEffect(() => {
         getImagesByBookId(bookIDOk).then(
@@ -91,6 +121,7 @@ const BookChangeStaffAndAdmin: React.FC = () => {
             addBookImage(e.target.files[0], book, token).then(
                 result => {
                     alert("Thêm ảnh thành công");
+                    navigate(0);
                 }
             ).catch(
                 error => {
@@ -106,6 +137,7 @@ const BookChangeStaffAndAdmin: React.FC = () => {
                 result => {
                     alert("Xóa ảnh thành công");
                     setImages(preImage => preImage.filter(image => image !== selectedImage));
+                    navigate(0);
                 }
             ).catch(
                 error => {
@@ -121,6 +153,8 @@ const BookChangeStaffAndAdmin: React.FC = () => {
     const [listedPriceCondition, setListedPriceCondition] = useState<boolean>(false);
     const [priceCondition, setPriceCondition] = useState<boolean>(false);
     const [decriptionCondition, setDecriptionCondition] = useState<boolean>(false);
+    const [categoryCondition, setCategoryCondition] = useState<boolean>(false);
+    const [contentCondition, setContentCondition] = useState<boolean>(false);
 
     const [authors, setAuthors] = useState<AuthorModel[]>([])
 
@@ -128,14 +162,16 @@ const BookChangeStaffAndAdmin: React.FC = () => {
     const [listedPrice, setListedPrice] = useState("0");
     const [price, setPrice] = useState("0");
     const [decription, setDecription] = useState("");
+    const [content, setContent] = useState("");
     const [authorID, setAuthorID] = useState(0);
+    const [categoryID, setCategoryID] = useState(0);
 
 
     const handelAuthorNameChange = async (e: React.ChangeEvent<HTMLInputElement>) => {        //thao tác tìm tác giả theo tên và chọn tác giả để set và authorID
         if (token && e.target.value != null) {
             getAuthorByContainingAuthorName(e.target.value, token).then(
                 result => {
-                    if(result){
+                    if (result) {
                         setAuthors(result);
                     }
                 }
@@ -149,7 +185,7 @@ const BookChangeStaffAndAdmin: React.FC = () => {
         }
     }
 
-    const handleAuthorChange = () => {                                
+    const handleAuthorChange = () => {
         if (document.getElementById("authorID") as HTMLSelectElement | null) {
             const author = document.getElementById("authorID") as HTMLSelectElement | null;
             if (author) {
@@ -158,29 +194,38 @@ const BookChangeStaffAndAdmin: React.FC = () => {
         }
     }
 
-    useEffect(()=>{   //điều kiện chọn tác giả khi chỉ có duy nhất 1 tác giả được tìm ra, không có sự thay đổi ở select
-        if(authors.length > 0){
+    useEffect(() => {   //điều kiện chọn tác giả khi chỉ có duy nhất 1 tác giả được tìm ra, không có sự thay đổi ở select
+        if (authors.length > 0) {
             setAuthorID(authors[0].author_id);
         }
-    },[authors])
+    }, [authors])
 
-    
 
-    const handleSubmit = () =>{                       //lưu thay đổi
-        if(token && book && book.point && book.number_of_book){
+    const handleCategoryChange = () => {
+        if (document.getElementById("categoryID") as HTMLSelectElement | null) {
+            const category = document.getElementById("categoryID") as HTMLSelectElement | null;
+            if (category) {
+                setCategoryID(parseInt(category.value));
+            }
+        }
+    }
+
+    const handleSubmit = () => {                       //lưu thay đổi
+        if (token && book && book.point && book.number_of_book) {
             const listedprice = parseInt(listedPrice);
             const Price = parseInt(price);
-            
-            bookChange(book.book_id, bookName, book.number_of_book, isNaN(listedprice)?0:listedprice, isNaN(Price)?0:Price, decription, book.point, authorID, token).then(
-                result=>{
+
+            bookChange(book.book_id, bookName, book.number_of_book, isNaN(listedprice) ? 0 : listedprice, isNaN(Price) ? 0 : Price, decription, book.point, authorID, categoryID, token, content).then(
+                result => {
                     alert("Lưu thay đổi thành công");
+                    navigate(0);
                 }
             ).catch(
-                error=>{
+                error => {
                     console.log(error);
                 }
             )
-        }else{
+        } else {
             navigate("/user/login");
             return;
         }
@@ -203,7 +248,7 @@ const BookChangeStaffAndAdmin: React.FC = () => {
 
     return (
         <div className="container mt-5 pt-5">
-            <h1 className="text-start">Cài đặt sách</h1>
+            <h1 className="text-start">Sách</h1>
             <hr />
             <div className="row">  {/*image */}
                 <div>
@@ -229,77 +274,98 @@ const BookChangeStaffAndAdmin: React.FC = () => {
                 </div>
             </div>
             <hr />
-            <div className="mt-5" style={{ marginLeft: "40px" }}>  {/*book id */}
-                <h3 className="text-start mb-3">Mã sách: {book?.book_id}</h3>
+            <div className="mt-5" style={{ border: "1px solid green", width: "450px", borderRadius: "5px", margin: "20px", padding: "20px", marginLeft: "425px" }}>  {/*book id */}
+                <h3 className="text-start mb-3" style={{ color: " #800000" }}>Mã sách: {book?.book_id}</h3>
 
 
                 {/*book name */}
-                <div className="row mb-5">
-                    <div className="col-md-5">
-                        <h4 className="text-start ">Tên sách:   {book?.book_name}</h4>
+                <div className="row mb-2">
+                    <div className="col-md-10">
+                        <h5 className="text-start ">Tên sách:   {book?.book_name}</h5>
                     </div>
-                    <div className="col-md-7 text-start" style={{ marginLeft: "-80px" }}>
-                        <i className="fa fa-info" style={{ color: "red" }} aria-hidden="true" onClick={() => setBookNameCondition(bookNameCondition ? false : true)}></i>
+                    <div className="col-md-2 text-start">
+                        <i className="fa fa-edit" style={{ color: "red" }} aria-hidden="true" onClick={() => setBookNameCondition(bookNameCondition ? false : true)}></i>
                     </div>
                 </div>
-                {bookNameCondition && <input className="form-control mb-3" placeholder="Tên sách muốn thay đổi" onChange={(e) => setBookName(e.target.value)} value={bookName}></input>}
-                
+                {bookNameCondition && <input style={{ width: "400px", border: "1px solid #1B03A3" }} className="form-control mb-3" placeholder="Tên sách muốn thay đổi" onChange={(e) => setBookName(e.target.value)} value={bookName}></input>}
+
                 {/*book author */}
-                <div className="row mb-5">
-                    <div className="col-md-5">
-                        <h4 className="text-start mb-2">Tác giả:   {author?.author_name}</h4>
+                <div className="row mb-2">
+                    <div className="col-md-10">
+                        <h5 className="text-start mb-2">Tác giả:   {author?.author_name}</h5>
                     </div>
-                    <div className="col-md-7 text-start" style={{ marginLeft: "-80px" }}>
-                        <i className="fa fa-info" style={{ color: "red" }} aria-hidden="true" onClick={() => setAuthorCondition(authorCondition ? false : true)}></i>
+                    <div className="col-md-2 text-start" >
+                        <i className="fa fa-edit" style={{ color: "red" }} aria-hidden="true" onClick={() => setAuthorCondition(authorCondition ? false : true)}></i>
                     </div>
                 </div>
                 {authorCondition && (
-                    <input className="form-control mb-3" placeholder="Tác giả muốn thay đổi" onChange={handelAuthorNameChange}></input>)
+                    <input style={{ width: "400px", border: "1px solid #1B03A3" }} className="form-control mb-3" placeholder="Tác giả muốn thay đổi" onChange={handelAuthorNameChange}></input>)
                 }
-                {authorCondition && authors?.length != 0 && <select className="form-select mb-3" id="authorID" aria-label="Default select example" onChange={handleAuthorChange}>
+                {authorCondition && authors?.length != 0 && <select className="form-select mb-3" id="authorID" aria-label="Default select example" onChange={handleAuthorChange} style={{ width: "400px" }}>
                     {authors?.map(author => (<option value={`${author.author_id}`}>{author.author_name}</option>))}
                 </select>}
-                
-                
-                
+
+                {/*book category */}
+                <div className="row mb-2">
+                    <div className="col-md-10">
+                        {categorys && <h5 className="text-start mb-2">Thể loại: {categorys.length > 0 ? categorys[0]?.categoryName : "Chưa cập nhật!"}</h5>}
+                    </div>
+                    <div className="col-md-2 text-start" >
+                        <i className="fa fa-edit" style={{ color: "red" }} aria-hidden="true" onClick={() => setCategoryCondition(categoryCondition ? false : true)}></i>
+                    </div>
+                </div>
+                {categoryCondition && allCategorys?.length != 0 && <select className="form-select mb-3" id="categoryID" aria-label="Default select example" onChange={handleCategoryChange} style={{ width: "400px", border: "1px solid #1B03A3" }}>
+                    {allCategorys?.map(category => (<option value={`${category.categoryID}`}>{category?.categoryName}</option>))}
+                </select>}
+
                 {/*listed price */}
-                <div className="row mb-5">
-                    <div className="col-md-5">
-                        <h4 className="text-start mb-2">Giá niêm yết:   {Format(book?.listed_price)} đ</h4>
+                <div className="row mb-2">
+                    <div className="col-md-10">
+                        <h5 className="text-start mb-2">Giá niêm yết:   {Format(book?.listed_price)} đ</h5>
                     </div>
-                    <div className="col-md-7 text-start" style={{ marginLeft: "-80px" }}>
-                        <i className="fa fa-info" style={{ color: "red" }} aria-hidden="true" onClick={() => setListedPriceCondition(listedPriceCondition ? false : true)}></i>
+                    <div className="col-md-2 text-start">
+                        <i className="fa fa-edit" style={{ color: "red" }} aria-hidden="true" onClick={() => setListedPriceCondition(listedPriceCondition ? false : true)}></i>
                     </div>
                 </div>
-                {listedPriceCondition && <input className="form-control mb-3" type="number" placeholder="Giá niêm yết muốn thay đổi" onChange={(e) => setListedPrice(e.target.value)} value={listedPrice}></input>}
-                
-                
+                {listedPriceCondition && <input className="form-control mb-3" style={{ width: "400px", border: "1px solid #1B03A3" }} type="number" placeholder="Giá niêm yết muốn thay đổi" onChange={(e) => setListedPrice(e.target.value)} value={listedPrice}></input>}
+
+
                 {/*price */}
-                <div className="row mb-5">
-                    <div className="col-md-5">
-                        <h4 className="text-start mb-2">Giá đã giảm:   {Format(book?.price)} đ</h4>
+                <div className="row mb-2">
+                    <div className="col-md-10">
+                        <h5 className="text-start mb-2">Giá đã giảm:   {Format(book?.price)} đ</h5>
                     </div>
-                    <div className="col-md-7 text-start" style={{ marginLeft: "-80px" }}>
-                        <i className="fa fa-info" style={{ color: "red" }} aria-hidden="true" onClick={() => setPriceCondition(priceCondition ? false : true)}></i>
+                    <div className="col-md-2 text-start" >
+                        <i className="fa fa-edit" style={{ color: "red" }} aria-hidden="true" onClick={() => setPriceCondition(priceCondition ? false : true)}></i>
                     </div>
                 </div>
-                {priceCondition && <input className="form-control mb-3" type="number" placeholder="Giá bán muốn thay đổi" onChange={(e) => setPrice(e.target.value)} value={price}></input>}
-                
-                
+                {priceCondition && <input style={{ width: "400px", border: "1px solid #1B03A3" }} className="form-control mb-3" type="number" placeholder="Giá bán muốn thay đổi" onChange={(e) => setPrice(e.target.value)} value={price}></input>}
+
+
                 {/*decription */}
-                <div className="row mb-5">
-                    <div className="col-md-5">
-                        <h4 className="text-start mb-2">Mô tả:   {book?.description}</h4>
+                <div className="row mb-2">
+                    <div className="col-md-10">
+                        <h5 className="text-start mb-2">Mô tả</h5>
                     </div>
-                    <div className="col-md-7 text-start" style={{ marginLeft: "-80px" }}>
-                        <i className="fa fa-info" style={{ color: "red" }} aria-hidden="true" onClick={() => setDecriptionCondition(decriptionCondition ? false : true)}></i>
+                    <div className="col-md-2 text-start">
+                        <i className="fa fa-edit" style={{ color: "red" }} aria-hidden="true" onClick={() => setDecriptionCondition(decriptionCondition ? false : true)}></i>
                     </div>
                 </div>
-                {decriptionCondition && <input className="form-control mb-3" placeholder="Mô tả sách muốn thay đổi" onChange={(e) => setDecription(e.target.value)} value={decription}></input>}
-            
-            
+                {decriptionCondition && <input style={{ width: "400px", border: "1px solid #1B03A3" }} className="form-control mb-3" placeholder="Mô tả sách muốn thay đổi" onChange={(e) => setDecription(e.target.value)} value={decription}></input>}
+
+
+                {/*content */}
+                <div className="row mb-2">
+                    <div className="col-md-10">
+                        <h5 className="text-start mb-2">Nội dung</h5>
+                    </div>
+                    <div className="col-md-2 text-start">
+                        <i className="fa fa-edit" style={{ color: "red" }} aria-hidden="true" onClick={() => setContentCondition(contentCondition ? false : true)}></i>
+                    </div>
+                </div>
+                {contentCondition && <input style={{ width: "400px", border: "1px solid #1B03A3" }} className="form-control mb-3" placeholder="Nội dung sách muốn thay đổi" onChange={(e) => setContent(e.target.value)} value={content}></input>}
             </div>
-            <div className="mt-5 pt-5">
+            <div className="mt-2">
                 <button className="btn btn-success" onClick={handleSubmit}>Lưu thay đổi</button>
             </div>
         </div>

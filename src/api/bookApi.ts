@@ -10,6 +10,7 @@ interface book {
     decription: string;
     numberOfBooks: number;
     point: number;
+    content: string;
 }
 
 interface getResult {
@@ -35,7 +36,7 @@ async function getBook(endpoint: string): Promise<getResult> {
             number_of_book: responseData[key].numberOfBooks,
             point: responseData[key].point,
             author_id: responseData[key].author_id,
-            quantity_sold: responseData[key].quantitySold
+            quantity_sold: responseData[key].quantitySold,
         });
     }
 
@@ -63,6 +64,11 @@ export async function findBook(bookName: string, categoryID: number): Promise<ge
 
     if (bookName !== "" && categoryID === 0) {
         endpoint = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookID,desc&size=8&page=0&bookName=${bookName}`;
+        if ((await getBook(endpoint)).result.length > 0){
+            return getBook(endpoint);
+        }else{
+            return getBook(`http://localhost:8080/books/search/findByAuthor_AuthorName?sort=bookID,desc&size=8&page=0&authorName=${bookName}`)
+        }
     } else if (bookName === "" && categoryID > 0) {
         endpoint = `http://localhost:8080/books/search/findByCategoryList_CategoryID?sort=bookID,desc&categoryID=${categoryID}`;
     } else if (bookName !== "" && categoryID > 0) {
@@ -81,7 +87,6 @@ export async function getABook(bookID: number): Promise<BookModel | null> {
             throw new Error("fail call API getABook");
         }
         const responseData = await response.json(); //gọi endpoint lấy kết quả dạng json 
-
         if (responseData) {
             return {
                 book_id: responseData.bookID,
@@ -91,8 +96,11 @@ export async function getABook(bookID: number): Promise<BookModel | null> {
                 listed_price: responseData.listedPrice,
                 number_of_book: responseData.numberOfBooks,
                 point: responseData.point,
-                author_id: responseData.author_id,
-                quantity_sold: responseData.quantitySold
+                quantity_sold: responseData.quantitySold,
+                publisher: responseData.publisher,
+                publication_year: responseData.publicationYear,
+                language: responseData.language,
+                content: responseData.content,
             }
         } else {
             throw new Error("book undefined");
@@ -177,7 +185,7 @@ export async function getBookByAuthorID(authorID: number) {
     }
 }
 
-export async function bookChange(bookID: number, bookName: string, numberOfBooks: number, listedPrice: number, price: number, decription: string, point: number, authorID: number, token: string) {
+export async function bookChange(bookID: number, bookName: string, numberOfBooks: number, listedPrice: number, price: number, decription: string, point: number, authorID: number, categoryID: number, token: string, content: string) {
     const endpoint = "http://localhost:8080/staff/bookchange";
     try {
         const Book: book = {
@@ -187,15 +195,17 @@ export async function bookChange(bookID: number, bookName: string, numberOfBooks
             listedPrice: listedPrice,
             numberOfBooks: numberOfBooks,
             point: point,
-            price: price
+            price: price,
+            content: content
         }
 
         const bookChangeResponse = {
             book: Book,
-            authorID: authorID
+            authorID: authorID,
+            categoryID: categoryID,
         }
         const response = await fetch(endpoint, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-type': 'application/json',
                 'Authorization': `Bearer ${token}`
@@ -242,18 +252,18 @@ export async function staffGetAllBook(token: string) {
         console.log(error);
     }
 }
-export async function staffFindBook(token:string, bookName: string) {
-    const books : BookModel[] = [];
+export async function staffFindBook(token: string, bookName: string) {
+    const books: BookModel[] = [];
     const endpoint = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookID,desc&size=8&page=0&bookName=${bookName}`;
     try {
         const response = await fetch(endpoint, {
             method: 'GET',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
         });
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api staffFindBook");
         }
         const responseData = await response.json();
@@ -277,7 +287,7 @@ export async function staffFindBook(token:string, bookName: string) {
     }
 }
 
-export async function changeNumberOfBook(token : string, numberOfBook: number, bookID: number) {
+export async function changeNumberOfBook(token: string, numberOfBook: number, bookID: number) {
     const endpoint = "http://localhost:8080/staff/numberofbookchange";
     const numberOfBookChangeResponse = {
         bookID: bookID,
@@ -285,15 +295,15 @@ export async function changeNumberOfBook(token : string, numberOfBook: number, b
     }
     try {
         const response = await fetch(endpoint, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(numberOfBookChangeResponse)
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api changeNumberOfBook");
         }
 
@@ -309,16 +319,98 @@ export async function deleteBook(token: string, bookID: number) {
         const response = await fetch(endpoint, {
             method: 'DELETE',
             headers: {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(bookID)
         });
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api deleteToken");
         }
         return response;
     } catch (error) {
         console.log(error);
+    }
+}
+
+export async function getBookByBillItemID(billID: number, token: string) {
+    const endpoint = `http://localhost:8080/billitems/${billID}/book`;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("fail call api getBookByBillItemID");
+        }
+
+        const responseData = await response.json();
+
+        return {
+            book_id: responseData.bookID,
+            book_name: responseData.bookName,
+            description: responseData.decription,
+            price: responseData.price,
+            listed_price: responseData.listedPrice,
+            number_of_book: responseData.numberOfBooks,
+            point: responseData.point,
+            author_id: responseData.author_id,
+            quantity_sold: responseData.quantitySold,
+            publisher: responseData.publisher,
+            publication_year: responseData.publicationYear,
+            language: responseData.language
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getBookByCategoryID(token: string, categoryID: number) {
+    const books: BookModel[] = [];
+    const endpoint = `http://localhost:8080/categorys/${categoryID}/bookList`;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        if (!response.ok) {
+            throw new Error("fail call api staffFindBook");
+        }
+        const responseData = await response.json();
+        const data = responseData._embedded.books;
+        for (const key in data) {                //nhập sách vào dãy
+            books.push({
+                book_id: data[key].bookID,
+                book_name: data[key].bookName,
+                description: data[key].decription,
+                price: data[key].price,
+                listed_price: data[key].listedPrice,
+                number_of_book: data[key].numberOfBooks,
+                point: data[key].point,
+                author_id: data[key].author_id,
+                quantity_sold: data[key].quantitySold
+            });
+        };
+        return books;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function existByBookName(bookname: string) {
+    const endpoint = `http://localhost:8080/books/search/existsByBookName?bookName=${bookname}`;
+    try {
+        const response = await fetch(endpoint);
+        const result = response.json();
+        return result;
+    } catch (error) {
+        console.log("error: " + error);
     }
 }

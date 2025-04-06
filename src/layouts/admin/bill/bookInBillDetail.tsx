@@ -1,41 +1,40 @@
-import React, { useEffect, useState } from "react";
-import CartItemModel from "../../../../models/CartItemModel";
-import BookModel from "../../../../models/BookModel";
-import { deleteCartItem, getBookInCartItem } from "../../../../api/cartApi";
-import ImageModel from "../../../../models/ImageModel";
-import { getImagesByBookId } from "../../../../api/imageApi";
-import RenderRating from "../../../../util/RenderRating";
-import Format from "../../../../util/ToLocaleString";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import OrderItemModel from "../../../../models/OrderItemModel";
-import { getBookByOrderItemID } from "../../../../api/bookApi";
+import { useEffect, useState } from "react";
+import BillItemModel from "../../../models/BillItemModel";
+import BookModel from "../../../models/BookModel";
+import { getBookByBillItemID } from "../../../api/bookApi";
+import { Link } from "react-router-dom";
+import ImageModel from "../../../models/ImageModel";
+import { getImagesByBookId } from "../../../api/imageApi";
+import Format from "../../../util/ToLocaleString";
 
-interface BookInCartITemInterface {
-    orderItem: OrderItemModel;
+interface BookInBillDetailProps {
+    billItem: BillItemModel;
 }
 
-const BookInConfirmOrder: React.FC<BookInCartITemInterface> = (props) => {
-    const [book, setBook] = useState<BookModel | null>(null);
-    const [images, setImages] = useState<ImageModel[]>([]);
+const BookInBillDetail: React.FC<BookInBillDetailProps> = ({ billItem }) => {
     const token = localStorage.getItem("tokenLogin");
+
+    const [book, setBook] = useState<BookModel | null>();
+    const [images, setImages] = useState<ImageModel[]>([]);
     const [dataload, setdataload] = useState<boolean>(true);
     const [error, seterror] = useState(null);
-    const navigate = useNavigate();
 
+    console.log(billItem.billItemID)
 
     useEffect(() => {
-        getBookByOrderItemID(props.orderItem.orderItemID, token != null ? token : "").then(
-            result => {
-                setBook(result);
-                setdataload(false);
-            }
-        ).catch(
-            error => {
-                seterror(error);
-                setdataload(false);
-            }
-        )
-    }, [])
+        if (token) {
+            getBookByBillItemID(billItem.billItemID, token).then(
+                result => {
+                    setBook(result);
+                    setdataload(false);
+                }
+            ).catch(
+                error => {
+                    seterror(error);
+                }
+            )
+        }
+    }, []);
 
     useEffect(() => {
         if (book != null) {
@@ -54,8 +53,6 @@ const BookInConfirmOrder: React.FC<BookInCartITemInterface> = (props) => {
         }
     }, [book])
 
-
-
     if (dataload) {
         return (
             <div>
@@ -63,6 +60,7 @@ const BookInConfirmOrder: React.FC<BookInCartITemInterface> = (props) => {
             </div>
         );
     }
+
     if (error) {
         return (
             <div>
@@ -77,8 +75,8 @@ const BookInConfirmOrder: React.FC<BookInCartITemInterface> = (props) => {
     }
 
     return (
-        <div className="row" >
-            <div className="col-md-6">
+        <div className="row mt-3 mb-3" >
+            <div className="col-md-4">
                 <Link to={`/staff/changebookinformation/${book?.book_id}`}>
                     <img
                         src={"data:image/png;base64," + dulieuanh}
@@ -88,15 +86,18 @@ const BookInConfirmOrder: React.FC<BookInCartITemInterface> = (props) => {
                     />
                 </Link>
             </div>
-            <div className="col-md-6 mt-2">
+            <div className="col-md-4 mt-2">
                 <Link to={`/staff/changebookinformation/${book?.book_id}`} style={{ textDecoration: 'none' }}>
                     <h5 className="text-start">{book?.book_name}</h5>
                 </Link>
-                <p className="text-start">Giá: {Format(book?.price)} đ</p>
+                <p className="text-start mt-4" style={{ color: "red" }}>Giá đang bán: {Format(book?.price)} đ</p>
                 <h6 className="text-start">Số lượng trong kho: {book?.number_of_book}</h6>
             </div>
+            <div className="col-md-4 pt-5 mt-2">
+                <p className="text-start" style={{ color: "red" }}>Giá nhập: {Format(billItem.price)} đ</p>
+                <h6 className="text-start">Số lượng nhập: {billItem.numberOfBillItem}</h6>
+            </div>
         </div>
-    );
+    )
 }
-
-export default BookInConfirmOrder;
+export default BookInBillDetail;

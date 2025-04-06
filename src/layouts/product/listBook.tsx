@@ -74,8 +74,8 @@ const ListBook: React.FC<listBookInterface> = (props) => {
     if (books?.length === 0) {
         return (
             <div className="container">
-                <div className="d-flex align-items-center justify-content-center">
-                    <h1 style={{ background: "green" }}>Hiện không tìm thấy sách theo yêu cầu!</h1>
+                <div className="d-flex align-items-center justify-content-center mt-5">
+                    <h1 style={{ color:"gray" }}>Hiện không tìm thấy sách theo yêu cầu!</h1>
                 </div>
             </div>
         );

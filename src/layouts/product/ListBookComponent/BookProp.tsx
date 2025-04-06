@@ -8,6 +8,7 @@ import Format from "../../../util/ToLocaleString";
 import WishList from "../../../models/WishList";
 import { getWishList } from "../../../api/wishListApi";
 import { jwtDecode } from "jwt-decode";
+import { Button, Modal, Space, Typography } from "antd";
 
 interface JwtPayload {
     isAdmin: boolean;
@@ -30,6 +31,8 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
 
     const [staffCondition, setStaffCondition] = useState<boolean>(false);
     const [adminCondition, setAdminCondition] = useState<boolean>(false);
+
+    const [numberOfBook, setNumberOfBook] = useState<number | undefined>(book.number_of_book);
 
     useEffect(() => {
         if (token) {
@@ -78,11 +81,9 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
             wishListID: wishListID,
         };
 
-        console.log(requestData);
-
         try {
             const response = await fetch(endpoint, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -123,9 +124,9 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
 
     return (
         <div className="col-md-3 mt-2">
-            <div className="card" style={{ blockSize: "700px", height: "680px" }}>
+            <div className="card" style={staffCondition || adminCondition ? { blockSize: "600px", height: "600px" } : { blockSize: "700px", height: "650px" }}>
                 {staffCondition || adminCondition ? (                                          //tùy chỉnh hiển thị phụ thuộc vào quyền
-                    <img 
+                    <img
                         src={"data:image/png;base64," + dulieuanh}
                         className="card-img-top"
                         alt={book.book_name}
@@ -143,21 +144,46 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
 
 
                 {wishListCondition && (     // WishList
-                    <div className="fixed-top" style={{ top: "350px", left: "650px", right: "600px", borderRadius: "10px", backgroundColor: "gray" }}>
-                        <h3 style={{ color: "whitesmoke" }}>Chọn danh sách yêu thích</h3>
-                        {wishLists.map((wishlist) => (
-                            <button className="btn btn-success mb-2" style={{ width: "200px", paddingLeft: "20px" }} key={wishlist.wishList_id} onClick={() => handleAddBookToWishList(wishlist.wishList_id)}>{wishlist.wishList_name}</button>
-                        ))}
-                        <button className="btn btn-danger" onClick={() => setWishListCondition(false)}>Đóng</button>
-                    </div>)}
+                    <Modal
+                        title={<Typography.Title level={3} style={{ color: '#1890ff' }}>Chọn danh sách yêu thích</Typography.Title>}
+                        open={wishListCondition}
+                        onCancel={() => setWishListCondition(false)}
+                        footer={null}
+                        centered
+                    >
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                            {wishLists.map((wishlist) => (
+                                <Button
+                                    key={wishlist.wishList_id}
+                                    type="primary"
+                                    block
+                                    onClick={() => handleAddBookToWishList(wishlist.wishList_id)}
+                                >
+                                    {wishlist.wishList_name}
+                                </Button>
+                            ))}
+                        </Space>
+                    </Modal>
+                )}
 
 
-                <div className="card-body">
-                    {staffCondition || adminCondition ? (<h5 className="card-title">{book.book_name}</h5>) :         //tùy chỉnh hiển thị phụ thuộc vào quyền
+                <div className="card-body" >
+                    {staffCondition || adminCondition
+                        ?
+                        (<Link to={`/staff/changebookinformation/${book.book_id}`} style={{ textDecoration: 'none' }}>
+                            <div style={{ height: "50px" }}>
+                                <h5 className="card-title">{book.book_name}</h5>
+                            </div>
+                        </Link>)
+                        :         //tùy chỉnh hiển thị phụ thuộc vào quyền
                         (<Link to={`/book/${book.book_id}`} style={{ textDecoration: 'none' }}>
-                            <h5 className="card-title">{book.book_name}</h5>
-                        </Link>)}
-                    <div className="price mb-3">
+                            <div style={{ height: "50px" }}>
+                                <h5 className="card-title">{book.book_name}</h5>
+                            </div>
+                        </Link>)
+                    }
+
+                    <div className="price mb-3" >
                         <span className="original-price" style={{ paddingRight: "10px" }}>
                             <del style={{ color: "red" }}>{Format(book.listed_price)} đ</del>
                         </span>
@@ -167,27 +193,35 @@ const BookProp: React.FC<bookPropInterface> = ({ book }) => {
                         </span>
                     </div>
                     {staffCondition || adminCondition ?                        //tùy chỉnh hiển thị phụ thuộc vào quyền
-                        (<Link to={`/staff/changebookinformation/${book.book_id}`}>
-                            <button className="btn btn-success w-50 mt-4">Sửa</button>
-                        </Link>) :
+                        (<div className="text-start">
+                            {numberOfBook != undefined && numberOfBook > 0 ? <h6 className="mt-4" style={{ color: "green" }}>Còn hàng</h6> : <h6 className="mt-4" style={{ color: "red" }}>Hết hàng</h6>}
+                        </div>)
+                        :
                         (<div className="row mt-2" role="group">
                             <div className="col-6">
-                                <button className="btn btn-secondary btn-block" onClick={() => { handleGetWishList(); setWishListCondition(true) }}>
+                                <button className="btn btn-secondary btn-block" title="danh sách yêu thích" style={{ backgroundColor: "red", borderColor: "red" }} onClick={() => { handleGetWishList(); setWishListCondition(true) }}>
                                     <i className="fas fa-heart"></i>
                                 </button>
                             </div>
                             <div className="col-6">
-                                <button className="btn btn-danger btn-block">
+                                <button className="btn btn-danger btn-block" title="giỏ hàng" style={{ backgroundColor: "yellowgreen", borderColor: "yellowgreen" }}>
                                     <NavLink to={`/book/${book.book_id}`}>
                                         <i className="fas fa-shopping-cart" style={{ color: "white" }}></i>
                                     </NavLink>
                                 </button>
                             </div>
-                            <h5 className="card-title mt-5 text-end">{RenderRating(book.point ? book.point : 0)}</h5>
+                            <div className="row">
+                                <div className="col-md-6">
+                                    {numberOfBook != undefined && numberOfBook > 0 ? <h6 className="mt-4" style={{ color: "green" }}>Còn hàng</h6> : <h6 className="mt-4" style={{ color: "red" }}>Hết hàng</h6>}
+                                </div>
+                                <div className="col-md-6">
+                                    <h5 className="card-title mt-4 text-end">{RenderRating(book.point ? book.point : 0)}</h5>
+                                </div>
+                            </div>
                         </div>)}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 export default BookProp;

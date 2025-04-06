@@ -184,9 +184,9 @@ const ReportProcess: React.FC = () => {
                 <h1 className="" style={{ color: "red" }}>Xử lý báo cáo đơn hàng</h1>
                 <hr className="mb-5" />
                 <div className="row mt-5 mb-5">
-                    <div className="col-md-8">
-                        <h2 className="text-start">Thể loại: {reportType?.reportTypeName}</h2>
-                        <h3 className="text-start">Ngày báo cáo: {report?.createReportDate}</h3>
+                    <div className="col-md-8 mt-3">
+                        <h4 className="text-start">Thể loại: {reportType?.reportTypeName}</h4>
+                        <h4 className="text-start">Ngày báo cáo: {report?.createReportDate}</h4>
                     </div>
                     <div className="col-md-4">
                         <div className="row">
@@ -198,12 +198,12 @@ const ReportProcess: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    {userCondition && <div className="container form-control fixed-top" style={{ backgroundColor: "lightblue", width: "500px", height: "300px", marginTop: "200px", borderRadius: "15px" }}>
+                    {userCondition && <div className="container form-control fixed-top" style={{ backgroundColor: " #E8E8E8", width: "500px", height: "300px", marginTop: "200px", borderRadius: "15px" }}>
                         <button className="btn" style={{ marginLeft: "450px", color: "green" }} onClick={() => setUserCondition(false)}><h5>X</h5></button>
-                        <h3 style={{ color: "white" }}>{user?.user_name}</h3>
+                        <h3>{user?.user_name}</h3>
                         <h4 style={{ color: "gray" }} className="text-start mt-2">ID: {user?.user_id}</h4>
-                        <h4 style={{ color: "gray" }} className="text-start">Số điện thoại: {user?.phone_number}</h4>
-                        <h4 style={{ color: "gray" }} className="text-start">Địa chỉ: {user?.address}</h4>
+                        <h4 style={{ color: "gray" }} className="text-start mt-3">Số điện thoại: {user?.phone_number}</h4>
+                        <h4 style={{ color: "gray" }} className="text-start mt-3">Địa chỉ: {user?.address}</h4>
                     </div>}
                     {responseCondition && <div className="container form-control fixed-top" style={{ backgroundColor: "lightblue", width: "500px", height: "300px", marginTop: "200px", borderRadius: "15px" }}>
                         <button className="btn" style={{ marginLeft: "450px", color: "green" }} onClick={() => setResponseCondition(false)}><h5>X</h5></button>
@@ -219,33 +219,33 @@ const ReportProcess: React.FC = () => {
                 </div>
                 <hr />
                 <div className="mt-5 pb-5">
-                    <button className="btn btn-success" onClick={() => setOrderCondition(orderCondition ? false : true)}>{orderCondition ? "thu gọn" : "chi tiết đơn hàng"}</button>
+                    <button className="btn btn-success mb-5" onClick={() => setOrderCondition(orderCondition ? false : true)}>{orderCondition ? "thu gọn" : "chi tiết đơn hàng"}</button>
                     {orderCondition && (
-                        <div className="container">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <h3 className="text-start" style={{ color: "blueviolet" }}>Mã đơn hàng: {order?.orderID}</h3>
-                                    <h4 className="text-start">Ngày đặt hàng: {order?.orderDate}</h4>
-                                    <h4 className="text-start">Ngày giao hàng: {order?.deliveryDate}</h4>
-                                    <h4 className="text-start">Tổng giá trị đơn hàng: {Format(order?.totalPrice)} đ</h4>
-                                    <h4 className="text-start">Địa chỉ giao hàng: {order?.deliveryAddress}</h4>
-                                </div>
-                                <div className="col-md-6">
-                                    <h4 className="text-start mt-2 pt-4" style={{ marginLeft: "200px" }}>Kiểu giao hàng: {deliveryType?.deliveryTypeName}</h4>
-                                    <h4 className="text-start" style={{ marginLeft: "200px" }}>Kiểu thanh toán: {payment?.paymentName}</h4>
-                                </div>
+                        <div className="container row" style={{ backgroundColor: "white", borderRadius: "10px", border: "1px solid black", marginLeft: "1px" }}>
+                            <div className="col-md-6 mt-5">
+                                <h3 className="text-start" style={{ color: "blueviolet" }}>Mã đơn hàng: {order?.orderID}</h3>
+                                <h6 className="text-start mt-4">Người nhận hàng: {order?.deliveryUserName}</h6>
+                                <h6 className="text-start mt-3">Số điện thoại giao hàng: {order?.deliveryPhoneNumber}</h6>
+                                <h6 className="text-start mt-3">Ngày đặt hàng: {order?.orderDate}</h6>
+                                <h6 className="text-start mt-3">Ngày giao hàng: {order?.deliveryDate}</h6>
+                                <h6 className="text-start mt-3">Địa chỉ giao hàng: {order?.deliveryAddress}</h6>
+                                <h6 className="text-start mt-3">Kiểu giao hàng: {deliveryType?.deliveryTypeName}</h6>
+                                <h6 className="text-start mt-3">Kiểu thanh toán: {payment?.paymentName}</h6>
+                                <h5 className="text-start mt-5" style={{ color: "red" }}>Tổng giá trị đơn hàng: {Format(order?.totalPrice)} đ</h5>
                             </div>
-                            {orderItems?.map((orderItem) => (
-                                <div className="container row mt-5" style={{ border: "1px solid black", borderRadius: "10px", backgroundColor: "white" }}>
-                                    <div className="col-md-9 mt-3 mb-3">
-                                        <BookInReportProcess orderItemID={orderItem.orderItemID} />
+                            <div className="col-md-6 overflow-auto" style={{ maxHeight: "500px" }}>
+                                {orderItems?.map((orderItem) => (
+                                    <div className="container row mt-5 mb-5" style={{ border: "1px solid black", borderRadius: "10px", backgroundColor: "white" }}>
+                                        <div className="col-md-8 mt-3 mb-3">
+                                            <BookInReportProcess orderItemID={orderItem.orderItemID} />
+                                        </div>
+                                        <div className="col-md-4 mt-3">
+                                            <h5 className="text-end">Số lượng: {orderItem.numberOfOrderItem}</h5>
+                                            <h5 className="text-end" style={{ color: "red" }}>Trị giá: {Format(orderItem.price)} đ</h5>
+                                        </div>
                                     </div>
-                                    <div className="col-md-3 mt-3">
-                                        <h4 className="text-start">Số lượng: {orderItem.numberOfOrderItem}</h4>
-                                        <h4 className="text-start">Trị giá: {Format(orderItem.price)} đ</h4>
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>

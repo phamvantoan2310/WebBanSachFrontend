@@ -27,11 +27,11 @@ const Carousel: React.FC = () => {
             }
         );
     }, [])
-    const book1: BookModel = books[0];  //lấy 3 cuốn sách đầu tiên
-    const book2: BookModel = books[1];
-    const book3: BookModel = books[2];
+    const book1: BookModel = books[0]  //lấy 3 cuốn sách đầu tiên
+    const book2: BookModel = books[1]
+    const book3: BookModel = books[2]
 
-    let book1ID: number = (book1 && book1.book_id) ? book1.book_id : 0;
+    let book1ID: number = (book1 && book1.book_id) ? book1.book_id : 0
     let book2ID: number = (book2 && book2.book_id) ? book2.book_id : 0
     let book3ID: number = (book3 && book3.book_id) ? book3.book_id : 0
 
@@ -94,58 +94,59 @@ const Carousel: React.FC = () => {
     }
 
     return (
-        <div style={{ marginBottom: '100px', marginTop: '100px' }}>
-            <div id="carouselExampleCaptions" className="carousel slide carousel-dark">
-                <div className="carousel-inner">
-                    <div className="carousel-item active" data-bs-interval="10000">
-                        <div className="row align-items-center">
-                            <div className="col-5 text-center">
-                                <img src={"data:image/png;base64," + dulieuanh1} className="float-end" style={{ width: '150px' }} />
-                            </div>
-                            <div className="col-7">
-                                <Link to={`/book/${book1ID}`} style={{textDecoration:'none'}}>
-                                    <h5>{book_name1}</h5>
-                                </Link>
-                                <p>{description1}.</p>
-                            </div>
+        <div id="carouselExampleCaptions" className="carousel slide carousel-dark">
+            <div className="carousel-inner" style={{ backgroundColor: " #ddddee", height: "300px" }}>
+                <div className="text-start" style={{ color: " #8000ff", marginLeft: "100px" }}>
+                    <h3 style={{font: "icon", fontSize:"25px"}}>SÁCH MỚI HÔM NAY</h3>
+                </div>
+                <div className="carousel-item active" data-bs-interval="10000">
+                    <div className="row align-items-center">
+                        <div className="col-5 text-center">
+                            <img src={"data:image/png;base64," + dulieuanh1} className="float-end" style={{ width: '150px', height: '220px' }} />
                         </div>
-                    </div>
-                    <div className="carousel-item" data-bs-interval="10000">
-                        <div className="row align-items-center">
-                            <div className="col-5 text-center">
-                                <img src={"data:image/png;base64," + dulieuanh2} className="float-end" style={{ width: '150px' }} />
-                            </div>
-                            <div className="col-7">
-                                <Link to={`/book/${book2ID}`} style={{textDecoration:'none'}}>
-                                    <h5>{book_name2}</h5>
-                                </Link>
-                                <p>{description2}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="carousel-item" data-bs-interval="10000">
-                        <div className="row align-items-center">
-                            <div className="col-5 text-center">
-                                <img src={"data:image/png;base64," + dulieuanh3} className="float-end" style={{ width: '150px' }} />
-                            </div>
-                            <div className="col-7">
-                                <Link to={`/book/${book3ID}`} style={{textDecoration:'none'}}>
-                                    <h5>{book_name3}</h5>
-                                </Link>
-                                <p>{description3}.</p>
-                            </div>
+                        <div className="col-7">
+                            <Link to={`/book/${book1ID}`} style={{ textDecoration: 'none' }}>
+                                <h5>{book_name1}</h5>
+                            </Link>
+                            <p>{description1.substring(0, 50)}...</p>
                         </div>
                     </div>
                 </div>
-                <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span className="visually-hidden">Previous</span>
-                </button>
-                <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span className="visually-hidden">Next</span>
-                </button>
+                <div className="carousel-item" data-bs-interval="10000">
+                    <div className="row align-items-center">
+                        <div className="col-5 text-center">
+                            <img src={"data:image/png;base64," + dulieuanh2} className="float-end" style={{ width: '150px', height: '220px' }} />
+                        </div>
+                        <div className="col-7">
+                            <Link to={`/book/${book2ID}`} style={{ textDecoration: 'none' }}>
+                                <h5>{book_name2}</h5>
+                            </Link>
+                            <p>{description2.substring(0, 50)}...</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="carousel-item" data-bs-interval="10000">
+                    <div className="row align-items-center">
+                        <div className="col-5 text-center">
+                            <img src={"data:image/png;base64," + dulieuanh3} className="float-end" style={{ width: '150px', height: '220px' }} />
+                        </div>
+                        <div className="col-7">
+                            <Link to={`/book/${book3ID}`} style={{ textDecoration: 'none' }}>
+                                <h5>{book_name3}</h5>
+                            </Link>
+                            <p>{description3.substring(0, 50)}...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Previous</span>
+            </button>
+            <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Next</span>
+            </button>
         </div>
     );
 }

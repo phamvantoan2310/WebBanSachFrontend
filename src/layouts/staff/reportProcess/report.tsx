@@ -48,22 +48,26 @@ const ReportStaff: React.FC = () => {
         <div className="container mt-5 pt-5">
             <h1 className="text-start">Xử lý báo cáo</h1>
             <hr />
-            {reports?.map(report => (
-                <div className="row mt-5" style={{ backgroundColor: "white", borderRadius: "10px", border: "1px solid black" }}>
+            <div className="row overflow-auto" style={{maxHeight:"500px"}}>
+                {reports?.map(report => (
                     <div className="col-md-6">
-                        <h3 className="text-start" style={{ color: "burlywood" }}>Mã báo cáo: {report.reportID}</h3>
-                        <h6 className="text-start">Ngày báo cáo: {report.createReportDate}</h6>
-                        <h6 className="text-start">Lý do: {report.reportDetail}</h6>
+                        <div className="row mt-5" style={{ backgroundColor: "white", borderRadius: "10px", border: "1px solid #FFBD00" }}>
+                            <div className="col-md-6">
+                                <h3 className="text-start" style={{ color: "burlywood" }}>Mã báo cáo: {report.reportID}</h3>
+                                <h6 className="text-start">Ngày báo cáo: {report.createReportDate}</h6>
+                                <h6 className="text-start">Lý do: {report.reportDetail}</h6>
 
+                            </div>
+                            <div className="col-md-6">
+                                <Link to={`/staff/reportprocess/${report.reportID}`}>
+                                    <button className="btn btn-primary w-50" style={{ marginTop: "25px", marginLeft: "100px" }}>{report.reportResponse === null ? "Xử lý" : "Chi tiết"}</button>
+                                </Link>
+                                {report.reportResponse !== null && <button className="btn btn-success w-25" style={{ marginTop: "10px", marginBottom: "10px", marginLeft: "300px" }}>Đã phản hồi</button>}
+                            </div>
+                        </div>
                     </div>
-                    <div className="col-md-6">
-                        <Link to={`/staff/reportprocess/${report.reportID}`}>
-                            <button className="btn btn-primary w-25" style={{ marginTop: "10px", marginLeft: "300px" }}>{report.reportResponse === null ? "Xử lý" : "Chi tiết"}</button>
-                        </Link>
-                        {report.reportResponse !== null && <button className="btn btn-success w-25" style={{marginTop: "10px", marginBottom: "10px", marginLeft: "300px" }}>Đã phản hồi</button>}
-                    </div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 }

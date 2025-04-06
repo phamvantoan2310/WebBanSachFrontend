@@ -3,20 +3,41 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import WishList from "../../../models/WishList";
 import { jwtDecode } from "jwt-decode";
 import { addWishList, getWishList } from "../../../api/wishListApi";
+import { getAUser } from "../../../api/userApi";
 
 const WishListItem: React.FC = () => {
+    const token = localStorage.getItem("tokenLogin");
+    useEffect(() => {
+        if (token) {
+            const dataToken = jwtDecode(token);
+            if (dataToken.exp != undefined ? dataToken.exp : 0 > Math.floor(Date.now())) {
+                getAUser(token).then(
+                    result => {
+                        if (result?.account_status == false) {
+                            navigate("/account")
+                        }
+                    }
+                ).catch(
+                    error => {
+                        console.log(error);
+                    }
+                )
+            } else {
+                navigate("/user/login");
+                return;
+            }
+        } else {
+            navigate("/user/login");
+            return;
+        }
+    }, [token])
+
+
     const navigate = useNavigate();
-    const [token, setToken] = useState<string | null>('');
     const [wishLists, setWishList] = useState<WishList[]>([]);
     const [dataload, setdataload] = useState<boolean>(true);
     const [error, seterror] = useState<any>(null);
     const [formCondition, setFormCondition] = useState(false);
-
-    const getRandomColor = () => {
-        const colors = ["#FF5733", "#33FF57", "#5733FF", "#FFFF33", "#33FFFF"];
-        const randomIndex = Math.floor(Math.random() * colors.length);
-        return colors[randomIndex];
-    };
 
     const [wishListName, setWishListName] = useState('');
     const [decription, setDecription] = useState('');
@@ -45,20 +66,18 @@ const WishListItem: React.FC = () => {
 
     useEffect(() => {
         try {
-            if (localStorage.getItem('tokenLogin') == null) {
+            if (token) {
+                getWishList(token != null ? token : '').then(
+                    result => {
+                        console.log(result);
+                        setWishList(result);
+                        setdataload(false);
+                    }
+                )
+            } else {
                 navigate("/user/login");
-                return;
             }
-            if (localStorage.getItem('tokenLogin') != null) {
-                setToken(localStorage.getItem('tokenLogin'));
-            }
-            getWishList(token != null ? token : '').then(
-                result => {
-                    console.log(result);
-                    setWishList(result);
-                    setdataload(false);
-                }
-            )
+
         } catch (error) {
             setdataload(false);
             seterror(error);
@@ -82,46 +101,66 @@ const WishListItem: React.FC = () => {
         );
     }
     return (
-        <div className="container pt-5 mt-5 pb-5">
-            <div className="row">
+        <div className="container py-5">
+            <div className="text-center mb-4 mt-5">
+                <h2 className="fw-bold">Danh sách Yêu thích</h2>
+                <p className="text-muted">Quản lý và tạo các danh sách yêu thích của bạn một cách dễ dàng.</p>
+            </div>
+
+            <div className="row g-4">
                 {wishLists.map((wishlist) => (
-                    <div key={wishlist.wishList_id} className="col-md-4 mb-3">
+                    <div key={wishlist.wishList_id} className="col-md-4">
                         <Link to={`/user/wishList/${wishlist.wishList_id}/${wishlist.wishList_name}`} style={{ textDecoration: 'none' }}>
-                            <div className="card" style={{ backgroundColor: getRandomColor() }}>
-                                <div className="card-body">
-                                    <h5 className="card-title">{wishlist.wishList_name}</h5>
-                                    {/* Add additional content or buttons as needed */}
+                            <div className="card shadow-lg border-0 rounded-4" style={{ backgroundColor: " #5733FF", transition: 'transform 0.3s' }}>
+                                <div className="card-body text-white">
+                                    <h5 className="card-title fw-semibold">{wishlist.wishList_name}</h5>
+                                    <p className="card-text">Xem chi tiết &raquo;</p>
                                 </div>
                             </div>
                         </Link>
                     </div>
                 ))}
             </div>
-            <hr />
-            {!formCondition && <button type="button" className="btn btn-success" onClick={() => { setFormCondition(true) }}>Tạo danh sách mới</button>}
 
-            {formCondition && (<div className="container alert alert-light" >
-                <div className="row">
-                    <div className="col-md-4 mb-3 mt-3">
-                        <div className="form-group">
-                            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Tên" onChange={(e) => setWishListName(e.target.value)} />
+            <hr className="my-5" />
+
+            {!formCondition && (
+                <div className="text-center">
+                    <button type="button" className="btn btn-primary px-4 py-2" onClick={() => setFormCondition(true)}>
+                        + Tạo danh sách mới
+                    </button>
+                </div>
+            )}
+
+            {formCondition && (
+                <div className="mt-4 p-4 bg-light rounded-4 shadow-sm" style={{ width: "500px", border: "1px solid #80EE98", marginLeft: "400px" }}>
+                    <h4 className="mb-4">Tạo danh sách yêu thích mới</h4>
+                    <div className="row g-3">
+                        <div className="col-md-6">
+                            <input
+                                type="text"
+                                style={{ width: "465px" }}
+                                className="form-control"
+                                placeholder="Tên danh sách"
+                                onChange={(e) => setWishListName(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        handleAddWishList();
+                                    }
+                                }}
+                            />
                         </div>
-                    </div>
-                    <div className="col-md-4 mb-3 mt-3">
-                        <div className="form-group">
-                            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Mô tả" onChange={(e) => setDecription(e.target.value)} />
+                        <div className=" col-md-6 d-flex gap-3" style={{ marginLeft: "270px" }}>
+                            <button type="button" className="btn btn-success px-4" onClick={handleAddWishList}>
+                                Thêm
+                            </button>
+                            <button type="button" className="btn btn-danger px-4" onClick={() => setFormCondition(false)}>
+                                Đóng
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-8 mb-5 mt-3">
-                        <button type="button" className="btn btn-success" onClick={handleAddWishList}>Thêm</button>
-                    </div>
-                    <div className="mt-5">
-                        <button type="button" className="btn btn-danger" onClick={() => { setFormCondition(false) }}>Đóng</button>
-                    </div>
-                </div>
-            </div>)}
+            )}
         </div>
     );
 }

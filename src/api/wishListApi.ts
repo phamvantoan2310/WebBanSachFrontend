@@ -43,7 +43,7 @@ export async function getWishList(token: string) {
     return wishLists;
 }
 
-export async function addWishList(wishlist : WishList, token: string|null){
+export async function addWishList(wishlist: WishList, token: string | null) {
     try {
         const endpoint = 'http://localhost:8080/user/addwishlist';
         const data = {
@@ -53,7 +53,7 @@ export async function addWishList(wishlist : WishList, token: string|null){
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                'Content-type' : 'application/json',
+                'Content-type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data)
@@ -64,11 +64,11 @@ export async function addWishList(wishlist : WishList, token: string|null){
     }
 }
 
-export async function getBookInWishList(wishListID:string, token: string) {
+export async function getBookInWishList(wishListID: string, token: string) {
     try {
         const endpoint = `http://localhost:8080/wish-lists/${wishListID}/bookList`;
 
-        const books : BookModel[] = [];
+        const books: BookModel[] = [];
 
         const response = await fetch(endpoint, {
             method: 'GET',
@@ -77,13 +77,13 @@ export async function getBookInWishList(wishListID:string, token: string) {
                 'Authorization': `Bearer ${token}`
             },
         });
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("fail call api getBookInWishList");
         }
         const responseData = await response.json();
         const data = responseData._embedded.books;
 
-        for(const key in data){
+        for (const key in data) {
             books.push({
                 book_id: data[key].bookID,
                 book_name: data[key].bookName,
@@ -100,13 +100,13 @@ export async function getBookInWishList(wishListID:string, token: string) {
     }
 }
 
-export async function deleteWishList(wishListID: number, token: string){
+export async function deleteWishList(wishListID: number, token: string) {
     try {
         const endpoint = 'http://localhost:8080/user/deletewishlist';
         const response = await fetch(endpoint, {
-            method: 'POST',
+            method: 'DELETE',
             headers: {
-                'Content-type' : 'application/json',
+                'Content-type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(wishListID)
@@ -114,5 +114,38 @@ export async function deleteWishList(wishListID: number, token: string){
         return response;
     } catch (error) {
         console.log("Error: " + error);
+    }
+}
+
+
+export async function changeWishListName(wishListID: number, wishListName: string, token: string) {
+    try {
+        const endpoint = 'http://localhost:8080/user/changewishlistname';
+        const changeWishListNameResponse = {
+            wishlistID: wishListID,
+            wishlistName: wishListName
+        }
+        const response = await fetch(endpoint, {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(changeWishListNameResponse)
+        })
+        return response;
+    } catch (error) {
+        console.log("Error: " + error);
+    }
+}
+
+export async function existByWishListName(wishlistName: string) {
+    const endpoint = `http://localhost:8080/wish-lists/search/existsByWishlistName?wishlistName=${wishlistName}`;
+    try {
+        const response = await fetch(endpoint);
+        const result = response.json();
+        return result;
+    } catch (error) {
+        console.log("error: " + error);
     }
 }
